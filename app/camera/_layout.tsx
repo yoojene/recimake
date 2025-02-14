@@ -3,6 +3,8 @@ import { router } from "expo-router";
 
 import { useState } from "react";
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 export default function CameraLayout() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -40,14 +42,30 @@ export default function CameraLayout() {
             router.back();
           }}
         >
-          <Text style={styles.text}>Close</Text>
+          <FontAwesome name="close" size={50} color="lightblue" />
         </TouchableOpacity>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
             onPress={() => setFacing(facing === "back" ? "front" : "back")}
           >
-            <Text style={styles.text}>Flip Camera</Text>
+            <Ionicons
+              name={facing === "back" ? "camera-reverse" : "camera"}
+              color="lightblue"
+              size={50}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => alert("Take a picture")}
+          >
+            <FontAwesome name="circle" size={64} color="lightblue" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => alert("Go to photo library")}
+          >
+            <Ionicons name="images-outline" size={50} color="lightblue" />
           </TouchableOpacity>
         </View>
       </CameraView>
@@ -80,8 +98,10 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flex: 1,
     flexDirection: "row",
+    justifyContent: "space-between",
     backgroundColor: "transparent",
-    margin: 64,
+
+    marginBottom: 50,
   },
   permissionButton: {
     // flex: 1,

@@ -6,6 +6,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Link, router } from "expo-router";
 import { useCameraPermissions } from "expo-camera";
+import { FlashList } from "@shopify/flash-list";
 
 export default function HomeScreen() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -21,6 +22,20 @@ export default function HomeScreen() {
       router.push("../camera");
     }
   };
+
+  const DATA = [
+    {
+      title: "First Item",
+    },
+    {
+      title: "Second Item",
+    },
+  ];
+
+  const DATA2 = Array.from({ length: 1000 }, (_, i) => ({
+    id: i,
+    title: `Item ${i}`,
+  }));
 
   return (
     <ParallaxScrollView
@@ -75,7 +90,13 @@ export default function HomeScreen() {
           <ThemedText type="subtitle">Camera</ThemedText>
         </TouchableOpacity>
         {/* </Link> */}
-      </ThemedView>
+
+        {/* <FlashList
+          data={DATA2}
+          renderItem={({ item }) => <ThemedText>{item.title}</ThemedText>}
+          estimatedItemSize={200}
+        />
+      </ThemedView> */}
     </ParallaxScrollView>
   );
 }

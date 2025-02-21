@@ -1,4 +1,9 @@
-import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
+import {
+  CameraCapturedPicture,
+  CameraType,
+  CameraView,
+  useCameraPermissions,
+} from "expo-camera";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 
@@ -8,6 +13,7 @@ import { useRef, useState } from "react";
 import { View, TouchableOpacity, Text, StyleSheet, Button } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Directory, File, Paths } from "expo-file-system/next";
 
 export default function CameraLayout() {
   const ref = useRef<CameraView>(null);
@@ -16,6 +22,8 @@ export default function CameraLayout() {
   const [permission, requestPermission] = useCameraPermissions();
   const [facing, setFacing] = useState<CameraType>("back");
 
+  const [photo, setPhoto] = useState<CameraCapturedPicture | undefined>();
+
   if (!permission) {
     return <View />;
   }
@@ -23,10 +31,16 @@ export default function CameraLayout() {
   const takePhoto = async () => {
     console.log("Take photo");
 
-    const photo = await ref?.current?.takePictureAsync();
-    console.log(photo);
-    if (photo) {
-      setUri(photo.uri);
+    const p = await ref?.current?.takePictureAsync();
+
+    console.log(p);
+    if (p) {
+      try {
+        setPhoto(p);
+        setUri(p.uri);
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
@@ -37,6 +51,33 @@ export default function CameraLayout() {
       aspect: [4, 3],
       quality: 1,
     });
+  };
+
+  const savePhoto = async () => {
+    console.log("Save photo");
+
+    console.log(photo);
+
+    if (!photo) {
+      return;
+    }
+    const file = new File(photo.uri);
+
+    // file.create();
+    console.log(file.uri);
+
+    const dir = new Directory(Paths.document, "photos");
+    if (!dir.exists) {
+      dir.create();
+    }
+
+    console.log(dir.uri);
+
+    file.move(dir);
+
+    console.log(file.uri);
+
+    setUri(null);
   };
 
   if (!permission?.granted) {
@@ -69,10 +110,7 @@ export default function CameraLayout() {
           <TouchableOpacity style={styles.button} onPress={() => setUri(null)}>
             <Ionicons name={"camera"} color="lightblue" size={60} />
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => alert("Save to camera roll")}
-          >
+          <TouchableOpacity style={styles.button} onPress={savePhoto}>
             <Ionicons name={"save-outline"} color="lightblue" size={60} />
           </TouchableOpacity>
         </View>

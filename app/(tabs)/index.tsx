@@ -95,8 +95,8 @@ export default function HomeScreen() {
           data={DATA2}
           renderItem={({ item }) => <ThemedText>{item.title}</ThemedText>}
           estimatedItemSize={200}
-        />
-      </ThemedView> */}
+        />*/}
+      </ThemedView>
     </ParallaxScrollView>
   );
 }

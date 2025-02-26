@@ -14,6 +14,7 @@ import { View, TouchableOpacity, Text, StyleSheet, Button } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Directory, File, Paths } from "expo-file-system/next";
+import { usePhotoContext } from "@/context/PhotoContext/usePhotoContext";
 
 export default function CameraLayout() {
   const ref = useRef<CameraView>(null);
@@ -21,6 +22,8 @@ export default function CameraLayout() {
 
   const [permission, requestPermission] = useCameraPermissions();
   const [facing, setFacing] = useState<CameraType>("back");
+
+  const { setPhotos } = usePhotoContext();
 
   const [photo, setPhoto] = useState<CameraCapturedPicture | undefined>();
 
@@ -63,19 +66,22 @@ export default function CameraLayout() {
     }
     const file = new File(photo.uri);
 
-    // file.create();
     console.log(file.uri);
+
+    file;
 
     const dir = new Directory(Paths.document, "photos");
     if (!dir.exists) {
       dir.create();
     }
 
-    console.log(dir.uri);
-
     file.move(dir);
 
-    console.log(file.uri);
+    const files = dir.list();
+
+    console.log(files);
+
+    setPhotos(files);
 
     setUri(null);
   };

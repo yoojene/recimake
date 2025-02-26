@@ -10,8 +10,8 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.recimake",
-      "appleTeamId": "S736JG73R9"
+      "bundleIdentifier": "io.genox.recimake",
+      "appleTeamId": "JJ84LBY5FN"
     },
     "android": {
       "adaptiveIcon": {
@@ -20,8 +20,11 @@
       },
       "permissions": [
         "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "package": "io.genox.recimake"
     },
     "web": {
       "bundler": "metro",

@@ -13,12 +13,11 @@ import { Directory, Paths } from "expo-file-system/next";
 import { usePhotoContext } from "@/context/PhotoContext/usePhotoContext";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import * as ImagePicker from "expo-image-picker";
+import { ChefWave } from "@/components/ChefWave";
 
 export default function HomeScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const { photos, setPhotos } = usePhotoContext();
-
-  // const [photos, setPhotos] = useState<any[]>([]);
 
   const toggleCamera = async () => {
     if (!permission) {
@@ -52,13 +51,13 @@ export default function HomeScreen() {
       }
     >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Recimake!</ThemedText>
-        <HelloWave />
+        <ThemedText type="title">Recimake</ThemedText>
+        <ChefWave />
       </ThemedView>
 
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">
-          Your one stop place to find new exciting recipes from your ingredients
+          Your one stop app to find new exciting recipes from your ingredients
         </ThemedText>
         <ThemedText>
           Take or upload photos from your camera roll to get started

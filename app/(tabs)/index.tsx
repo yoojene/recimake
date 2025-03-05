@@ -73,7 +73,6 @@ export default function HomeScreen() {
         }}
       >
         <IconSymbol size={54} name="camera.fill" color={"#000"} />
-        {/* <ThemedText type="subtitle">Take Photo</ThemedText> */}
       </TouchableOpacity>
       <TouchableOpacity
         onPress={selectImage}
@@ -84,7 +83,6 @@ export default function HomeScreen() {
         }}
       >
         <IconSymbol size={54} name="photo.stack.fill" color={"#000"} />
-        {/* <ThemedText type="subtitle">Take Photo</ThemedText> */}
       </TouchableOpacity>
     </ParallaxScrollView>
   );

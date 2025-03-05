@@ -14,6 +14,9 @@ const MAPPING = {
   "paperplane.fill": "send",
   "chevron.left.forwardslash.chevron.right": "code",
   "chevron.right": "chevron-right",
+  "camera.fill": "camera-alt",
+  "photo.stack.fill": "photo-library",
+  "list.bullet.rectangle.fill": "list-alt",
 } as Partial<
   Record<
     import("expo-symbols").SymbolViewProps["name"],

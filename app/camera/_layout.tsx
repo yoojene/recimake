@@ -16,6 +16,8 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Directory, File, Paths } from "expo-file-system/next";
 import { usePhotoContext } from "@/context/PhotoContext/usePhotoContext";
 
+import useAppStore, { Photo } from "@/components/store/useStore";
+
 export default function CameraLayout() {
   const ref = useRef<CameraView>(null);
   const [uri, setUri] = useState<string | null>(null);
@@ -24,6 +26,9 @@ export default function CameraLayout() {
   const [facing, setFacing] = useState<CameraType>("back");
 
   const { setPhotos } = usePhotoContext();
+
+  const zPhotos = useAppStore((state) => state.photos);
+  const setZPhotos = useAppStore((state) => state.setPhotos);
 
   const [photo, setPhoto] = useState<CameraCapturedPicture | undefined>();
 
@@ -68,8 +73,6 @@ export default function CameraLayout() {
 
     console.log(file.uri);
 
-    file;
-
     const dir = new Directory(Paths.document, "photos");
     if (!dir.exists) {
       dir.create();
@@ -77,10 +80,15 @@ export default function CameraLayout() {
 
     file.move(dir);
 
+    const photoFile: Photo = { file: file, date: new Date().toISOString() };
+
+    console.log(photoFile);
+
     const files = dir.list();
 
     console.log(files);
 
+    setZPhotos([...zPhotos, photoFile]);
     setPhotos(files);
 
     setUri(null);

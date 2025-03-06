@@ -1,15 +1,12 @@
 import { StyleSheet, Platform, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 
-import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { useCameraPermissions } from "expo-camera";
-import { FlashList } from "@shopify/flash-list";
-import { useEffect, useState } from "react";
-import { Directory, Paths } from "expo-file-system/next";
+import { Directory, Paths, File } from "expo-file-system/next";
 import { usePhotoContext } from "@/context/PhotoContext/usePhotoContext";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import * as ImagePicker from "expo-image-picker";
@@ -32,12 +29,37 @@ export default function HomeScreen() {
   };
 
   const selectImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images", "videos"],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images", "videos"],
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      console.log("result");
+      console.log(result);
+
+      if (result.assets) {
+        const file = new File(result.assets[0].uri);
+
+        const dir = new Directory(Paths.document, "photos");
+        if (!dir.exists) {
+          dir.create();
+        }
+
+        file.move(dir);
+
+        const files = dir.list();
+
+        console.log(files);
+
+        setPhotos(files);
+      }
+    } catch (error) {
+      console.log("error picking image");
+      console.log(error);
+    }
   };
 
   return (

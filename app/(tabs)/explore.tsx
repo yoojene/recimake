@@ -17,9 +17,19 @@ import { FlashList } from "@shopify/flash-list";
 import { usePhotoContext } from "@/context/PhotoContext/usePhotoContext";
 import { useCallback, useEffect, useState } from "react";
 import { Directory, Paths } from "expo-file-system/next";
+import useAppStore from "@/components/store/useStore";
 
 const PhotoList = () => {
   const { photos, setPhotos } = usePhotoContext();
+  const zPhotos = useAppStore((state) => state.photos);
+
+  const sortedZPhotos = [...zPhotos].sort((a, b) => {
+    return (new Date(b.date) as any) - (new Date(a.date) as any);
+  });
+
+  console.log("sortedZPhotos");
+  console.log(sortedZPhotos);
+
   return (
     <View style={styles.container}>
       <ThemedText> {photos.length} </ThemedText>
@@ -35,11 +45,26 @@ const PhotoList = () => {
           </View>
         )}
         estimatedItemSize={200}
-        onRefresh={() => {
-          console.log("refresh");
-        }}
-        refreshing={true}
       />
+      <ThemedText> ZPhotos </ThemedText>
+      <ThemedText> {zPhotos.length} </ThemedText>
+
+      <FlashList
+        data={sortedZPhotos}
+        renderItem={renderItem}
+        estimatedItemSize={200}
+      />
+    </View>
+  );
+};
+
+const renderItem = ({ item }: { item: any }) => {
+  return (
+    <View style={{ flexDirection: "row", padding: 8 }}>
+      <Image
+        source={{ uri: item.file.uri }}
+        style={{ width: 150, height: 150 }}
+      ></Image>
     </View>
   );
 };
@@ -88,27 +113,6 @@ export default function TabTwoScreen() {
         </View>
       )}
     </>
-    //   <View
-    //     style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-    //     // headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-    //     // headerImage={
-    //     //   <IconSymbol
-    //     //     size={310}
-    //     //     color="#808080"
-    //     //     name="chevron.left.forwardslash.chevron.right"
-    //     //     style={styles.headerImage}
-    //     //   />
-    //     // }
-    //     // refreshControl={
-    //     //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-    //     // }
-    //   >
-    //  (
-    //       <PhotoList />
-    //     ) : (
-    //       <ThemedText type="subtitle">No photos saved</ThemedText>
-    //     )}
-    //   </View>
   );
 }
 

@@ -6,11 +6,11 @@ export interface Photo {
   date: string;
   file: File
 }
-export type Store = {
+export type AppStore = {
   photos: Photo[];
   setPhotos: (photos: Photo[]) => void;
 };
-const useAppStore = create<Store>((set) => ({
+const useAppStore = create<AppStore>((set) => ({
   photos: [],
   setPhotos: (photos) => set({ photos }),
 }));

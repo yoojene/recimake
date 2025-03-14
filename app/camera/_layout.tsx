@@ -16,7 +16,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Directory, File, Paths } from "expo-file-system/next";
 import { usePhotoContext } from "@/context/PhotoContext/usePhotoContext";
 
-import useAppStore, { Photo } from "@/components/store/useStore";
+import useAppStore, { Photo } from "@/components/store/useAppStore";
 
 export default function CameraLayout() {
   const ref = useRef<CameraView>(null);

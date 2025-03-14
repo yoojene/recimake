@@ -17,13 +17,13 @@ import { FlashList } from "@shopify/flash-list";
 import { usePhotoContext } from "@/context/PhotoContext/usePhotoContext";
 import { useCallback, useEffect, useState } from "react";
 import { Directory, Paths } from "expo-file-system/next";
-import useAppStore from "@/components/store/useStore";
+import useAppStore, { Photo } from "@/components/store/useAppStore";
 
 const PhotoList = () => {
   const { photos, setPhotos } = usePhotoContext();
-  const zPhotos = useAppStore((state) => state.photos);
 
-  const sortedZPhotos = [...zPhotos].sort((a, b) => {
+  const zPhotos = useAppStore((state) => state.photos);
+  const sortedZPhotos = [...zPhotos].sort((a: Photo, b: Photo) => {
     return (new Date(b.date) as any) - (new Date(a.date) as any);
   });
 

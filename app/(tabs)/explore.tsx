@@ -18,21 +18,22 @@ import { usePhotoContext } from "@/context/PhotoContext/usePhotoContext";
 import { useCallback, useEffect, useState } from "react";
 import { Directory, Paths } from "expo-file-system/next";
 import useAppStore, { Photo } from "@/components/store/useAppStore";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const PhotoList = () => {
-  const { photos, setPhotos } = usePhotoContext();
+  // const { photos, setPhotos } = usePhotoContext();
 
   const zPhotos = useAppStore((state) => state.photos);
   const sortedZPhotos = [...zPhotos].sort((a: Photo, b: Photo) => {
     return (new Date(b.date) as any) - (new Date(a.date) as any);
   });
 
-  console.log("sortedZPhotos");
-  console.log(sortedZPhotos);
+  // console.log("sortedZPhotos");
+  // console.log(sortedZPhotos);
 
   return (
     <View style={styles.container}>
-      <ThemedText> {photos.length} </ThemedText>
+      {/* <ThemedText> {photos.length} </ThemedText>
 
       <FlashList
         data={photos}
@@ -46,7 +47,7 @@ const PhotoList = () => {
         )}
         estimatedItemSize={200}
       />
-      <ThemedText> ZPhotos </ThemedText>
+      <ThemedText> ZPhotos </ThemedText>*/}
       <ThemedText> {zPhotos.length} </ThemedText>
 
       <FlashList
@@ -71,7 +72,10 @@ const renderItem = ({ item }: { item: any }) => {
 
 export default function TabTwoScreen() {
   const { photos, setPhotos } = usePhotoContext();
+  const zPhotos = useAppStore((state) => state.photos);
 
+  console.log("zPhotos");
+  console.log(zPhotos);
   useEffect(() => {
     const photosDir = new Directory(Paths.document, "photos");
     if (!photosDir.exists) {
@@ -97,10 +101,9 @@ export default function TabTwoScreen() {
   }, [photos]);
 
   return (
-    <>
-      {photos.length > 0 ? (
+    <SafeAreaView style={styles.container}>
+      {zPhotos.length > 0 ? (
         <ScrollView
-          style={styles.container}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
@@ -112,7 +115,7 @@ export default function TabTwoScreen() {
           <ThemedText type="subtitle">No photos saved</ThemedText>
         </View>
       )}
-    </>
+    </SafeAreaView>
   );
 }
 

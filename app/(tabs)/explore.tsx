@@ -24,7 +24,10 @@ import Reanimated, {
 } from "react-native-reanimated";
 
 import HapticPressable from "@/components/HapicPressable";
+
+// TODO split out into own component
 const PhotoList = () => {
+  // TODO remove context
   // const { photos, setPhotos } = usePhotoContext();
 
   const zPhotos = useAppStore((state) => state.photos);

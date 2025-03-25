@@ -17,6 +17,8 @@ const MAPPING = {
   "camera.fill": "camera-alt",
   "photo.stack.fill": "photo-library",
   "list.bullet.rectangle.fill": "list-alt",
+  gear: "settings",
+  // "plus.square.on.square": "note-plus",
 } as Partial<
   Record<
     import("expo-symbols").SymbolViewProps["name"],

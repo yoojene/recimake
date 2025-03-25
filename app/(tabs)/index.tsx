@@ -11,6 +11,7 @@ import { usePhotoContext } from "@/context/PhotoContext/usePhotoContext";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import * as ImagePicker from "expo-image-picker";
 import { ChefWave } from "@/components/ChefWave";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -63,54 +64,59 @@ export default function HomeScreen() {
   };
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/food_spread.jpg")}
-          style={styles.reactLogo}
-        />
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Recimake</ThemedText>
-        <ChefWave />
-      </ThemedView>
-
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">
-          Your one stop app to find new exciting recipes from your ingredients
-        </ThemedText>
-        <ThemedText>
-          Take or upload photos from your camera roll to get started
-        </ThemedText>
-      </ThemedView>
-
-      <TouchableOpacity
-        onPress={toggleCamera}
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+    <SafeAreaView style={styles.container}>
+      <ParallaxScrollView
+        headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
+        headerImage={
+          <Image
+            source={require("@/assets/images/food_spread.jpg")}
+            style={styles.reactLogo}
+          />
+        }
       >
-        <IconSymbol size={54} name="camera.fill" color={"#000"} />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={selectImage}
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <IconSymbol size={54} name="photo.stack.fill" color={"#000"} />
-      </TouchableOpacity>
-    </ParallaxScrollView>
+        <ThemedView style={styles.titleContainer}>
+          <ThemedText type="title">Recimake</ThemedText>
+          <ChefWave />
+        </ThemedView>
+
+        <ThemedView style={styles.stepContainer}>
+          <ThemedText type="subtitle">
+            Your one stop app to find new exciting recipes from your ingredients
+          </ThemedText>
+          <ThemedText>
+            Take or upload photos from your camera roll to get started
+          </ThemedText>
+        </ThemedView>
+
+        <TouchableOpacity
+          onPress={toggleCamera}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <IconSymbol size={54} name="camera.fill" color={"#000"} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={selectImage}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <IconSymbol size={54} name="photo.stack.fill" color={"#000"} />
+        </TouchableOpacity>
+      </ParallaxScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",

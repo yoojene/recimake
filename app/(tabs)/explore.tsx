@@ -1,17 +1,13 @@
 import {
   StyleSheet,
   Image,
-  Platform,
   ScrollView,
   RefreshControl,
   View,
+  Text,
 } from "react-native";
 
-import { Collapsible } from "@/components/Collapsible";
-import { ExternalLink } from "@/components/ExternalLink";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { FlashList } from "@shopify/flash-list";
 import { usePhotoContext } from "@/context/PhotoContext/usePhotoContext";
@@ -20,6 +16,14 @@ import { Directory, Paths } from "expo-file-system/next";
 import useAppStore, { Photo } from "@/components/store/useAppStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import Reanimated, {
+  SharedValue,
+  useAnimatedStyle,
+} from "react-native-reanimated";
+
+import HapticPressable from "@/components/HapicPressable";
 const PhotoList = () => {
   // const { photos, setPhotos } = usePhotoContext();
 
@@ -28,26 +32,8 @@ const PhotoList = () => {
     return (new Date(b.date) as any) - (new Date(a.date) as any);
   });
 
-  // console.log("sortedZPhotos");
-  // console.log(sortedZPhotos);
-
   return (
     <View style={styles.container}>
-      {/* <ThemedText> {photos.length} </ThemedText>
-
-      <FlashList
-        data={photos}
-        renderItem={({ item }: { item: any }) => (
-          <View style={{ flexDirection: "row", padding: 8 }}>
-            <Image
-              source={{ uri: item.uri }}
-              style={{ width: 150, height: 150 }}
-            ></Image>
-          </View>
-        )}
-        estimatedItemSize={200}
-      />
-      <ThemedText> ZPhotos </ThemedText>*/}
       <ThemedText> {zPhotos.length} </ThemedText>
 
       <FlashList
@@ -61,12 +47,106 @@ const PhotoList = () => {
 
 const renderItem = ({ item }: { item: any }) => {
   return (
-    <View style={{ flexDirection: "row", padding: 8 }}>
-      <Image
-        source={{ uri: item.file.uri }}
-        style={{ width: 150, height: 150 }}
-      ></Image>
-    </View>
+    <GestureHandlerRootView>
+      <ReanimatedSwipeable
+        containerStyle={styles.swipeable}
+        friction={2}
+        enableTrackpadTwoFingerGesture
+        rightThreshold={40}
+        renderRightActions={RightAction}
+        renderLeftActions={LeftAction}
+      >
+        <View style={{ flexDirection: "row", padding: 8 }}>
+          <Image
+            source={{ uri: item.file.uri }}
+            style={{ width: 100, height: 100, borderRadius: 25 }}
+          ></Image>
+          <View
+            style={{
+              flexDirection: "column",
+              justifyContent: "center",
+              marginLeft: 8,
+            }}
+          >
+            <Text>Hello</Text>
+            <Text>{item.date}</Text>
+          </View>
+        </View>
+      </ReanimatedSwipeable>
+    </GestureHandlerRootView>
+  );
+};
+
+const LeftAction = (prog: SharedValue<number>, drag: SharedValue<number>) => {
+  const styleAnimation = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: drag.value - 120 }],
+    };
+  });
+  return (
+    <Reanimated.View style={styleAnimation}>
+      <View style={styles.leftAction}>
+        <HapticPressable
+          onHapticPressed={(ev) => console.log("Haptic pressed outsite")}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              // gap: 8,
+              margin: 16,
+            }}
+          >
+            <Text
+              style={{
+                alignContent: "center",
+                fontWeight: "bold",
+                color: "white",
+              }}
+            >
+              Delete
+            </Text>
+            <IconSymbol size={35} name="trash" color={"#FFF"} />
+          </View>
+        </HapticPressable>
+      </View>
+    </Reanimated.View>
+  );
+};
+
+const RightAction = (prog: SharedValue<number>, drag: SharedValue<number>) => {
+  const styleAnimation = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: drag.value + 140 }],
+    };
+  });
+  return (
+    <Reanimated.View style={styleAnimation}>
+      <View style={styles.rightAction}>
+        <HapticPressable
+          onHapticPressed={(ev) => console.log("Haptic pressed outsite")}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text
+              style={{
+                fontWeight: "bold",
+                color: "white",
+              }}
+            >
+              Add to recipe
+            </Text>
+            <IconSymbol size={35} name="plus.square.on.square" color={"#FFF"} />
+          </View>
+        </HapticPressable>
+      </View>
+    </Reanimated.View>
   );
 };
 
@@ -132,12 +212,30 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 8,
   },
 
   noPhotosContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  leftAction: {
+    width: 120,
+    height: "100%",
+    backgroundColor: "#fc032c",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  rightAction: {
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 140,
+    height: "100%",
+    backgroundColor: "green",
+  },
+  swipeable: {
+    backgroundColor: "papayawhip",
   },
 });

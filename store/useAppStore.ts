@@ -1,7 +1,7 @@
-import { File } from "expo-file-system/next";
 import { create } from "zustand";
 import { persist, createJSONStorage, StateStorage } from "zustand/middleware";
 import AsyncStorage from "expo-sqlite/kv-store";
+import { Photo } from "@/models/Photo.model";
 
 const storage: StateStorage = {
   getItem: async (name: string) => {
@@ -16,20 +16,25 @@ const storage: StateStorage = {
   },
 };
 
-export interface Photo {
-  date: string;
-  file: File;
-}
-export type AppStore = {
+type AppState = {
   photos: Photo[];
-  setPhotos: (photos: Photo[]) => void;
 };
 
-const useAppStore = create<AppStore>()(
+export type Actions = {
+  setPhotos: (photos: Photo[]) => void;
+  reset: () => void;
+};
+
+const initialState: AppState = {
+  photos: [],
+};
+
+const useAppStore = create<AppState & Actions>()(
   persist(
     (set, get) => ({
       photos: [],
       setPhotos: (photos) => set({ photos }),
+      reset: () => set(initialState),
     }),
     {
       name: "app-store",

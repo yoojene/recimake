@@ -12,10 +12,12 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import * as ImagePicker from "expo-image-picker";
 import { ChefWave } from "@/components/ChefWave";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useImageLibrary } from "@/hooks/usePhotoLibrary";
 
 export default function HomeScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const { photos, setPhotos } = usePhotoContext();
+  const { launchPicker } = useImageLibrary();
 
   const toggleCamera = async () => {
     if (!permission) {
@@ -30,37 +32,9 @@ export default function HomeScreen() {
   };
 
   const selectImage = async () => {
-    try {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images", "videos"],
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
+    console.log("Select image home");
 
-      console.log("result");
-      console.log(result);
-
-      if (result.assets) {
-        const file = new File(result.assets[0].uri);
-
-        const dir = new Directory(Paths.document, "photos");
-        if (!dir.exists) {
-          dir.create();
-        }
-
-        file.move(dir);
-
-        const files = dir.list();
-
-        console.log(files);
-
-        setPhotos(files);
-      }
-    } catch (error) {
-      console.log("error picking image");
-      console.log(error);
-    }
+    launchPicker();
   };
 
   return (

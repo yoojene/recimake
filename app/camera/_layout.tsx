@@ -16,7 +16,8 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Directory, File, Paths } from "expo-file-system/next";
 import { usePhotoContext } from "@/context/PhotoContext/usePhotoContext";
 
-import useAppStore, { Photo } from "@/components/store/useAppStore";
+import useAppStore, { Photo } from "@/store/useAppStore";
+import { useImageLibrary } from "@/hooks/usePhotoLibrary";
 
 export default function CameraLayout() {
   const ref = useRef<CameraView>(null);
@@ -31,6 +32,8 @@ export default function CameraLayout() {
   const setZPhotos = useAppStore((state) => state.setPhotos);
 
   const [photo, setPhoto] = useState<CameraCapturedPicture | undefined>();
+
+  const { launchPicker } = useImageLibrary();
 
   if (!permission) {
     return <View />;
@@ -53,12 +56,7 @@ export default function CameraLayout() {
   };
 
   const selectImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images", "videos"],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+    launchPicker();
   };
 
   const savePhoto = async () => {
@@ -92,6 +90,30 @@ export default function CameraLayout() {
     setPhotos(files);
 
     setUri(null);
+  };
+
+  /**
+   * Save image to photos directory on device
+   * with datestamp
+   *
+   */
+  const saveAsPhotoFile = async (uri: string) => {
+    const file = new File(uri);
+
+    console.log(file.uri);
+
+    const dir = new Directory(Paths.document, "photos");
+    if (!dir.exists) {
+      dir.create();
+    }
+
+    file.move(dir);
+
+    const photoFile: Photo = { file: file, date: new Date().toISOString() };
+
+    console.log(photoFile);
+
+    return photoFile;
   };
 
   if (!permission?.granted) {

@@ -14,7 +14,6 @@ export const HapticPressable = ({
       onPressIn={(ev) => {
         if (process.env.EXPO_OS === "ios") {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          console.log("Haptic Pressable pressed");
           onHapticPressed?.(ev);
         }
       }}

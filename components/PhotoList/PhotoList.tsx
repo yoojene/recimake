@@ -1,35 +1,19 @@
-import {
-  StyleSheet,
-  Image,
-  ScrollView,
-  RefreshControl,
-  View,
-  Text,
-} from "react-native";
-
-import { ThemedText } from "@/components/ThemedText";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+import useAppStore from "@/store/useAppStore";
 import { FlashList } from "@shopify/flash-list";
-import { usePhotoContext } from "@/context/PhotoContext/usePhotoContext";
-import { useCallback, useEffect, useState } from "react";
-import { Directory, Paths } from "expo-file-system/next";
-import useAppStore, { Photo } from "@/components/store/useAppStore";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, StyleSheet, Text, Image } from "react-native";
+import { ThemedText } from "../ThemedText";
 
+import HapticPressable from "../HapicPressable";
+import { IconSymbol } from "../ui/IconSymbol";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import Reanimated, {
   SharedValue,
   useAnimatedStyle,
 } from "react-native-reanimated";
+import { Photo } from "@/models/Photo.model";
 
-import HapticPressable from "@/components/HapicPressable";
-
-// TODO split out into own component
-const PhotoList = () => {
-  // TODO remove context
-  // const { photos, setPhotos } = usePhotoContext();
-
+export function PhotoList() {
   const zPhotos = useAppStore((state) => state.photos);
   const sortedZPhotos = [...zPhotos].sort((a: Photo, b: Photo) => {
     return (new Date(b.date) as any) - (new Date(a.date) as any);
@@ -46,7 +30,7 @@ const PhotoList = () => {
       />
     </View>
   );
-};
+}
 
 const renderItem = ({ item }: { item: any }) => {
   return (
@@ -80,7 +64,11 @@ const renderItem = ({ item }: { item: any }) => {
   );
 };
 
-const LeftAction = (prog: SharedValue<number>, drag: SharedValue<number>) => {
+const LeftAction = (
+  prog: SharedValue<number>,
+  drag: SharedValue<number>,
+  item: any
+) => {
   const styleAnimation = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: drag.value - 120 }],
@@ -90,14 +78,13 @@ const LeftAction = (prog: SharedValue<number>, drag: SharedValue<number>) => {
     <Reanimated.View style={styleAnimation}>
       <View style={styles.leftAction}>
         <HapticPressable
-          onHapticPressed={(ev) => console.log("Haptic pressed outsite")}
+          onHapticPressed={(ev) => onLeftActionPressed(ev, item)}
         >
           <View
             style={{
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",
-              // gap: 8,
               margin: 16,
             }}
           >
@@ -116,6 +103,12 @@ const LeftAction = (prog: SharedValue<number>, drag: SharedValue<number>) => {
       </View>
     </Reanimated.View>
   );
+};
+
+const onLeftActionPressed = (ev: any, item: any) => {
+  console.log("Delete pressed");
+  console.log(ev);
+  console.log(item);
 };
 
 const RightAction = (prog: SharedValue<number>, drag: SharedValue<number>) => {
@@ -153,74 +146,9 @@ const RightAction = (prog: SharedValue<number>, drag: SharedValue<number>) => {
   );
 };
 
-export default function TabTwoScreen() {
-  const { photos, setPhotos } = usePhotoContext();
-  const zPhotos = useAppStore((state) => state.photos);
-
-  console.log("zPhotos");
-  console.log(zPhotos);
-  useEffect(() => {
-    const photosDir = new Directory(Paths.document, "photos");
-    if (!photosDir.exists) {
-      return;
-    }
-
-    const files = photosDir.list();
-
-    console.log(files);
-
-    setPhotos(files);
-  }, []);
-
-  const [refreshing, setRefreshing] = useState(false);
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    console.log("refreshing");
-    console.log(photos);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, [photos]);
-
-  return (
-    <SafeAreaView style={styles.container}>
-      {zPhotos.length > 0 ? (
-        <ScrollView
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
-          <PhotoList />
-        </ScrollView>
-      ) : (
-        <View style={styles.noPhotosContainer}>
-          <ThemedText type="subtitle">No photos saved</ThemedText>
-        </View>
-      )}
-    </SafeAreaView>
-  );
-}
-
 const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
-  },
-  titleContainer: {
-    flexDirection: "row",
-    gap: 8,
-  },
   container: {
     flex: 1,
-  },
-
-  noPhotosContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
   },
   leftAction: {
     width: 120,

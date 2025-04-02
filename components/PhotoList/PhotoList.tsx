@@ -1,5 +1,9 @@
 import useAppStore from "@/store/useAppStore";
-import { FlashList } from "@shopify/flash-list";
+import {
+  FlashList,
+  ListRenderItem,
+  ListRenderItemInfo,
+} from "@shopify/flash-list";
 import { View, StyleSheet, Text, Image } from "react-native";
 import { ThemedText } from "../ThemedText";
 
@@ -12,27 +16,55 @@ import Reanimated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 import { Photo } from "@/models/Photo.model";
+import { usePhotoLibrary } from "@/hooks/usePhotoLibrary";
+import { useEffect, useState } from "react";
 
 export function PhotoList() {
-  const zPhotos = useAppStore((state) => state.photos);
-  const sortedZPhotos = [...zPhotos].sort((a: Photo, b: Photo) => {
+  const photos = useAppStore((state) => state.photos);
+  const [statusChange, setStatusChange] = useState<boolean>(false);
+  let sortedPhotos = [...photos].sort((a: Photo, b: Photo) => {
     return (new Date(b.date) as any) - (new Date(a.date) as any);
   });
+  useEffect(() => {
+    console.log("PhotoList changed, resorting");
+    sortedPhotos = [...photos].sort((a: Photo, b: Photo) => {
+      return (new Date(b.date) as any) - (new Date(a.date) as any);
+    });
+  }, [photos]);
 
   return (
     <View style={styles.container}>
-      <ThemedText> {zPhotos.length} </ThemedText>
+      {/* <ThemedText> {zPhotos.length} </ThemedText> */}
 
       <FlashList
-        data={sortedZPhotos}
-        renderItem={renderItem}
+        data={sortedPhotos}
+        renderItem={(item) =>
+          renderItem({
+            item: item,
+            extraData: {
+              setStatusChange: setStatusChange,
+              statusChange: statusChange,
+            },
+          })
+        }
         estimatedItemSize={200}
+        extraData={statusChange}
       />
     </View>
   );
 }
 
-const renderItem = ({ item }: { item: any }) => {
+const renderItem = ({
+  item: item,
+  extraData: { setStatusChange, statusChange },
+}: {
+  item: ListRenderItemInfo<Photo>;
+  extraData: {
+    setStatusChange: React.Dispatch<React.SetStateAction<boolean>>;
+    statusChange: boolean;
+  };
+}) => {
+  const photoItem: Photo = item.item;
   return (
     <GestureHandlerRootView>
       <ReanimatedSwipeable
@@ -40,12 +72,14 @@ const renderItem = ({ item }: { item: any }) => {
         friction={2}
         enableTrackpadTwoFingerGesture
         rightThreshold={40}
-        renderRightActions={RightAction}
-        renderLeftActions={LeftAction}
+        renderRightActions={(prog, drag) =>
+          RightAction(prog, drag, photoItem, setStatusChange, statusChange)
+        }
+        renderLeftActions={(prog, drag) => LeftAction(prog, drag, photoItem)}
       >
         <View style={{ flexDirection: "row", padding: 8 }}>
           <Image
-            source={{ uri: item.file.uri }}
+            source={{ uri: photoItem.file.uri }}
             style={{ width: 100, height: 100, borderRadius: 25 }}
           ></Image>
           <View
@@ -55,8 +89,7 @@ const renderItem = ({ item }: { item: any }) => {
               marginLeft: 8,
             }}
           >
-            <Text>Hello</Text>
-            <Text>{item.date}</Text>
+            <Text>{photoItem.status}</Text>
           </View>
         </View>
       </ReanimatedSwipeable>
@@ -67,8 +100,10 @@ const renderItem = ({ item }: { item: any }) => {
 const LeftAction = (
   prog: SharedValue<number>,
   drag: SharedValue<number>,
-  item: any
+  item: Photo
 ) => {
+  const { deleteFile } = usePhotoLibrary();
+
   const styleAnimation = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: drag.value - 120 }],
@@ -78,7 +113,7 @@ const LeftAction = (
     <Reanimated.View style={styleAnimation}>
       <View style={styles.leftAction}>
         <HapticPressable
-          onHapticPressed={(ev) => onLeftActionPressed(ev, item)}
+          onHapticPressed={() => onLeftActionPressed(item, deleteFile)}
         >
           <View
             style={{
@@ -105,13 +140,47 @@ const LeftAction = (
   );
 };
 
-const onLeftActionPressed = (ev: any, item: any) => {
+const onLeftActionPressed = (
+  item: Photo,
+  deleteFile: (uri: string) => void
+) => {
   console.log("Delete pressed");
-  console.log(ev);
-  console.log(item);
+
+  deleteFile(item.file.uri);
 };
 
-const RightAction = (prog: SharedValue<number>, drag: SharedValue<number>) => {
+const onRightActionPressed = (
+  item: Photo,
+  setPhotoStatus: (status: "new" | "saved", id: string) => void,
+  setPhotos: (photos: Photo[]) => void,
+  photos: Photo[],
+  setStatusChange: React.Dispatch<React.SetStateAction<boolean>>,
+  statusChange: boolean
+) => {
+  console.log("Right action pressed");
+  console.log(item);
+  debugger;
+
+  setPhotoStatus("saved", item.id);
+  console.log("photos", photos);
+  setPhotos(photos);
+  setStatusChange(!statusChange);
+};
+// TODO add to recipe
+
+const RightAction = (
+  prog: SharedValue<number>,
+  drag: SharedValue<number>,
+  item: Photo,
+  setStatusChange: React.Dispatch<React.SetStateAction<boolean>>,
+  statusChange: boolean
+) => {
+  console.log("Right action");
+  console.log(setStatusChange);
+  const setPhotoStatus = useAppStore((state) => state.setPhotoStatus);
+  const setPhotos = useAppStore((state) => state.setPhotos);
+  const photos = useAppStore((state) => state.photos);
+
   const styleAnimation = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: drag.value + 140 }],
@@ -121,7 +190,16 @@ const RightAction = (prog: SharedValue<number>, drag: SharedValue<number>) => {
     <Reanimated.View style={styleAnimation}>
       <View style={styles.rightAction}>
         <HapticPressable
-          onHapticPressed={(ev) => console.log("Haptic pressed outsite")}
+          onHapticPressed={() =>
+            onRightActionPressed(
+              item,
+              setPhotoStatus,
+              setPhotos,
+              photos,
+              setStatusChange,
+              statusChange
+            )
+          }
         >
           <View
             style={{

@@ -6,18 +6,14 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { router } from "expo-router";
 import { useCameraPermissions } from "expo-camera";
-import { Directory, Paths, File } from "expo-file-system/next";
-import { usePhotoContext } from "@/context/PhotoContext/usePhotoContext";
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import * as ImagePicker from "expo-image-picker";
 import { ChefWave } from "@/components/ChefWave";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useImageLibrary } from "@/hooks/usePhotoLibrary";
+import { usePhotoLibrary } from "@/hooks/usePhotoLibrary";
 
 export default function HomeScreen() {
   const [permission, requestPermission] = useCameraPermissions();
-  const { photos, setPhotos } = usePhotoContext();
-  const { launchPicker } = useImageLibrary();
+  const { launchPicker } = usePhotoLibrary();
 
   const toggleCamera = async () => {
     if (!permission) {

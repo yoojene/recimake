@@ -2,7 +2,9 @@ import useAppStore from "@/store/useAppStore";
 import { Directory, File, Paths } from "expo-file-system/next";
 import * as ImagePicker from "expo-image-picker";
 import { Photo } from "@/models/Photo.model";
-export function useImageLibrary() {
+import uuid from "react-native-uuid";
+
+export function usePhotoLibrary() {
   const zPhotos = useAppStore((state) => state.photos);
   const setZPhotos = useAppStore((state) => state.setPhotos);
 
@@ -20,29 +22,82 @@ export function useImageLibrary() {
         return;
       }
 
-      const file = new File(result.assets[0].uri);
+      saveToFileSystem(result.assets[0].uri);
 
-      console.log(file.uri);
-
-      const dir = new Directory(Paths.document, "photos");
-      if (!dir.exists) {
-        dir.create();
-      }
-
-      file.move(dir);
-
-      const photoFile: Photo = { file: file, date: new Date().toISOString() };
-
-      console.log(photoFile);
-
-      console.log(photoFile);
-
-      setZPhotos([...zPhotos, photoFile]);
+     
     } catch (error) {
       console.error("error picking image");
       console.error(error);
     }
   };
 
-  return { launchPicker };
+  const saveToFileSystem = async (uri: string, path: string = "photos") => {
+    console.log("save to file system");
+    const file = new File(uri);
+
+    const dir = new Directory(Paths.document, path);
+    if (!dir.exists) {
+      dir.create();
+    }
+    file.move(dir);
+    const photoFile: Photo = {
+      file: file,
+      date: new Date().toISOString(),
+      status: "new",
+      id: uuid.v4(),
+    };
+
+    setZPhotos([...zPhotos, photoFile]);
+  };
+
+  const listFiles = async (path: string = "photos") => {
+
+    const dir = new Directory(Paths.document, path);
+    if (!dir.exists) {
+      return [];
+    }
+
+    const files = dir.list();
+    console.log("files in directory " + path);
+    console.log(files);
+
+    
+    return files;
+
+  }
+
+  const deleteDirectory = async (path: string) => {
+    const dir = new Directory(Paths.document, path);
+    if (dir.exists) {
+      dir.delete();
+    }
+  };
+
+  const deleteFile = async (uri: string, path: string = "photos") => {
+
+    const dir = new Directory(Paths.document, path);
+    if (!dir.exists) {
+      return;
+      
+    }
+
+    const files = dir.list();
+
+    const file = files.find((f) => f.uri === uri);
+
+    if (file) {
+      file.delete();
+    }
+    const newPhotos = zPhotos.filter((p) => p.file.uri !== uri);
+    setZPhotos(newPhotos);
+
+  }
+
+  return {
+    launchPicker,
+    saveToFileSystem,
+    listFiles,
+    deleteDirectory,
+    deleteFile,
+  };
 }

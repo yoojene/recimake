@@ -13,11 +13,7 @@ import { useRef, useState } from "react";
 import { View, TouchableOpacity, Text, StyleSheet, Button } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Directory, File, Paths } from "expo-file-system/next";
-import { usePhotoContext } from "@/context/PhotoContext/usePhotoContext";
-
-import useAppStore, { Photo } from "@/store/useAppStore";
-import { useImageLibrary } from "@/hooks/usePhotoLibrary";
+import { usePhotoLibrary } from "@/hooks/usePhotoLibrary";
 
 export default function CameraLayout() {
   const ref = useRef<CameraView>(null);
@@ -26,14 +22,9 @@ export default function CameraLayout() {
   const [permission, requestPermission] = useCameraPermissions();
   const [facing, setFacing] = useState<CameraType>("back");
 
-  const { setPhotos } = usePhotoContext();
-
-  const zPhotos = useAppStore((state) => state.photos);
-  const setZPhotos = useAppStore((state) => state.setPhotos);
-
   const [photo, setPhoto] = useState<CameraCapturedPicture | undefined>();
 
-  const { launchPicker } = useImageLibrary();
+  const { launchPicker, saveToFileSystem } = usePhotoLibrary();
 
   if (!permission) {
     return <View />;
@@ -67,53 +58,10 @@ export default function CameraLayout() {
     if (!photo) {
       return;
     }
-    const file = new File(photo.uri);
 
-    console.log(file.uri);
-
-    const dir = new Directory(Paths.document, "photos");
-    if (!dir.exists) {
-      dir.create();
-    }
-
-    file.move(dir);
-
-    const photoFile: Photo = { file: file, date: new Date().toISOString() };
-
-    console.log(photoFile);
-
-    const files = dir.list();
-
-    console.log(files);
-
-    setZPhotos([...zPhotos, photoFile]);
-    setPhotos(files);
+    saveToFileSystem(photo.uri);
 
     setUri(null);
-  };
-
-  /**
-   * Save image to photos directory on device
-   * with datestamp
-   *
-   */
-  const saveAsPhotoFile = async (uri: string) => {
-    const file = new File(uri);
-
-    console.log(file.uri);
-
-    const dir = new Directory(Paths.document, "photos");
-    if (!dir.exists) {
-      dir.create();
-    }
-
-    file.move(dir);
-
-    const photoFile: Photo = { file: file, date: new Date().toISOString() };
-
-    console.log(photoFile);
-
-    return photoFile;
   };
 
   if (!permission?.granted) {

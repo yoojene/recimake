@@ -7,13 +7,11 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    // <SafeAreaView>
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
@@ -61,6 +59,5 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
-    // </SafeAreaView>
   );
 }

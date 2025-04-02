@@ -23,6 +23,7 @@ type AppState = {
 export type Actions = {
   setPhotos: (photos: Photo[]) => void;
   reset: () => void;
+  setPhotoStatus: (status: "new" | "saved", id: string) => void;
 };
 
 const initialState: AppState = {
@@ -34,6 +35,15 @@ const useAppStore = create<AppState & Actions>()(
     (set, get) => ({
       photos: [],
       setPhotos: (photos) => set({ photos }),
+      setPhotoStatus: (status: "new" | "saved", id: string) =>  {
+        const photos = get().photos;
+        const index = photos.findIndex((photo) => photo.id === id);
+        if (index !== -1) {
+          const updatedPhotos = [...photos];
+          updatedPhotos[index].status = status;
+          set({ photos: updatedPhotos });
+        }
+      },
       reset: () => set(initialState),
     }),
     {

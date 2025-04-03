@@ -5,8 +5,8 @@ import { Photo } from "@/models/Photo.model";
 import uuid from "react-native-uuid";
 
 export function usePhotoLibrary() {
-  const zPhotos = useAppStore((state) => state.photos);
-  const setZPhotos = useAppStore((state) => state.setPhotos);
+  const photos = useAppStore((state) => state.photos);
+  const setPhotos = useAppStore((state) => state.setPhotos);
 
   const launchPicker = async () => {
     console.log("launch picker");
@@ -47,7 +47,7 @@ export function usePhotoLibrary() {
       id: uuid.v4(),
     };
 
-    setZPhotos([...zPhotos, photoFile]);
+    setPhotos([...photos, photoFile]);
   };
 
   const listFiles = async (path: string = "photos") => {
@@ -88,8 +88,8 @@ export function usePhotoLibrary() {
     if (file) {
       file.delete();
     }
-    const newPhotos = zPhotos.filter((p) => p.file.uri !== uri);
-    setZPhotos(newPhotos);
+    const newPhotos = photos.filter((p) => p.file.uri !== uri);
+    setPhotos(newPhotos);
 
   }
 

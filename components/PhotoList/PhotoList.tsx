@@ -1,11 +1,6 @@
 import useAppStore from "@/store/useAppStore";
-import {
-  FlashList,
-  ListRenderItem,
-  ListRenderItemInfo,
-} from "@shopify/flash-list";
+import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import { View, StyleSheet, Text, Image } from "react-native";
-import { ThemedText } from "../ThemedText";
 
 import HapticPressable from "../HapicPressable";
 import { IconSymbol } from "../ui/IconSymbol";
@@ -17,25 +12,18 @@ import Reanimated, {
 } from "react-native-reanimated";
 import { Photo } from "@/models/Photo.model";
 import { usePhotoLibrary } from "@/hooks/usePhotoLibrary";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export function PhotoList() {
   const photos = useAppStore((state) => state.photos);
-  const [statusChange, setStatusChange] = useState<boolean>(false);
-  let sortedPhotos = [...photos].sort((a: Photo, b: Photo) => {
+  const [statusChange, setStatusChange] = useState<boolean>(false); // Used to trigger FlashList re-render
+
+  const sortedPhotos = [...photos].sort((a: Photo, b: Photo) => {
     return (new Date(b.date) as any) - (new Date(a.date) as any);
   });
-  useEffect(() => {
-    console.log("PhotoList changed, resorting");
-    sortedPhotos = [...photos].sort((a: Photo, b: Photo) => {
-      return (new Date(b.date) as any) - (new Date(a.date) as any);
-    });
-  }, [photos]);
 
   return (
     <View style={styles.container}>
-      {/* <ThemedText> {zPhotos.length} </ThemedText> */}
-
       <FlashList
         data={sortedPhotos}
         renderItem={(item) =>
@@ -144,29 +132,20 @@ const onLeftActionPressed = (
   item: Photo,
   deleteFile: (uri: string) => void
 ) => {
-  console.log("Delete pressed");
-
   deleteFile(item.file.uri);
 };
 
 const onRightActionPressed = (
   item: Photo,
   setPhotoStatus: (status: "new" | "saved", id: string) => void,
-  setPhotos: (photos: Photo[]) => void,
-  photos: Photo[],
   setStatusChange: React.Dispatch<React.SetStateAction<boolean>>,
   statusChange: boolean
 ) => {
   console.log("Right action pressed");
-  console.log(item);
-  debugger;
-
   setPhotoStatus("saved", item.id);
-  console.log("photos", photos);
-  setPhotos(photos);
   setStatusChange(!statusChange);
+  // TODO add to recipe
 };
-// TODO add to recipe
 
 const RightAction = (
   prog: SharedValue<number>,
@@ -175,11 +154,7 @@ const RightAction = (
   setStatusChange: React.Dispatch<React.SetStateAction<boolean>>,
   statusChange: boolean
 ) => {
-  console.log("Right action");
-  console.log(setStatusChange);
   const setPhotoStatus = useAppStore((state) => state.setPhotoStatus);
-  const setPhotos = useAppStore((state) => state.setPhotos);
-  const photos = useAppStore((state) => state.photos);
 
   const styleAnimation = useAnimatedStyle(() => {
     return {
@@ -194,8 +169,6 @@ const RightAction = (
             onRightActionPressed(
               item,
               setPhotoStatus,
-              setPhotos,
-              photos,
               setStatusChange,
               statusChange
             )

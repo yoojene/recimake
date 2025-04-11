@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import useAppStore from "@/store/useAppStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PhotoList } from "@/components/PhotoList/PhotoList";
+import PhotoListBottomSheet from "@/components/PhotoList/PhotoListBottomSheet";
 
 export default function FoodList() {
   const photos = useAppStore((state) => state.photos);
@@ -22,13 +23,16 @@ export default function FoodList() {
   return (
     <SafeAreaView style={styles.container}>
       {photos.length > 0 ? (
-        <ScrollView
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
-          <PhotoList />
-        </ScrollView>
+        <>
+          <ScrollView
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
+            <PhotoList />
+          </ScrollView>
+          <PhotoListBottomSheet />
+        </>
       ) : (
         <View style={styles.noPhotosContainer}>
           <ThemedText type="subtitle">No photos saved</ThemedText>
@@ -56,6 +60,12 @@ const styles = StyleSheet.create({
   noPhotosContainer: {
     flex: 1,
     justifyContent: "center",
+    alignItems: "center",
+  },
+
+  contentContainer: {
+    flex: 1,
+    padding: 36,
     alignItems: "center",
   },
 });

@@ -4,7 +4,13 @@ import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { useRef, useMemo, useCallback } from "react";
+import {
+  useRef,
+  useMemo,
+  useCallback,
+  useImperativeHandle,
+  useState,
+} from "react";
 import {
   StyleSheet,
   Text,
@@ -12,12 +18,20 @@ import {
   Image,
   Button,
   ScrollView,
+  TouchableOpacity,
+  Dimensions,
 } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+// import { Image } from "expo-image";
+
+import AwesomeGallery, { GalleryRef } from "react-native-awesome-gallery";
+import { Zoomable } from "@likashefqet/react-native-image-zoom";
+
 // import { cssInterop } from "nativewind";
 // cssInterop(Image, { className: "style" });
 
 export default function PhotoListBottomSheet() {
+  const gallery = useRef<GalleryRef>(null);
+
   const sheetRef = useRef<BottomSheetModal>(null);
 
   const setBottomSheetRef = useAppStore((state) => state.setBottomSheetRef);
@@ -50,6 +64,19 @@ export default function PhotoListBottomSheet() {
     );
   }, []);
 
+  const renderItem = useCallback(({ item }: { item: { uri: string } }) => {
+    return (
+      <View className="flex-col justify-start p-4">
+        <Image
+          className="w-28 h-28 rounded-lg"
+          source={{ uri: item.uri }}
+        ></Image>
+      </View>
+    );
+  }, []);
+
+  const hide = () => {};
+
   return (
     <BottomSheetModal
       ref={sheetRef}
@@ -68,20 +95,22 @@ export default function PhotoListBottomSheet() {
                 .filter((p) => p.status === "saved")
                 .map((photo) => (
                   <View className="flex-col justify-start p-4">
-                    <Image
-                      key={photo.id}
-                      className="w-28 h-28 rounded-lg"
-                      source={{ uri: photo.file.uri }}
-                    ></Image>
+                    <Zoomable isDoubleTapEnabled>
+                      <Image
+                        key={photo.id}
+                        className="w-28 h-28 rounded-lg"
+                        source={{ uri: photo.file.uri }}
+                      ></Image>
+                    </Zoomable>
                   </View>
                 ))}
+              <View className="w-full h-16">
+                <Button
+                  title="Generate Recipe"
+                  onPress={() => console.log("geerate button pressed")}
+                />
+              </View>
             </BottomSheetScrollView>
-            <View className="w-full h-16">
-              <Button
-                title="Generate Recipe"
-                onPress={() => console.log("geerate button pressed")}
-              />
-            </View>
           </>
         )}
         {photos.length === 0 && (
@@ -103,5 +132,42 @@ const styles = StyleSheet.create({
 
   contentContainer: {
     flex: 1,
+  },
+
+  overlayContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1000000,
+  },
+  overlayBackground: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(90, 90, 90, 0.95)",
+  },
+  overlayContent: {
+    flex: 1,
+    marginHorizontal: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 60,
+    right: 10,
+    padding: 5,
+    backgroundColor: "#007AFF",
+    borderRadius: 20,
+    zIndex: 100001,
+  },
+  closeIcon: {
+    width: 24,
+    height: 24,
+    tintColor: "#FFFFFF",
+  },
+  fullScreenImage: {
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
   },
 });

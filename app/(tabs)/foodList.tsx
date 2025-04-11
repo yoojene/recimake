@@ -20,8 +20,6 @@ export default function FoodList() {
 
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  // bottomSheetRef?.current?.present();
-
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(() => {
@@ -52,7 +50,7 @@ export default function FoodList() {
             {/* <ThemedText type="subtitle">No new photos</ThemedText> */}
             {photos.filter((p) => p.status === "saved").length > 0 ? (
               <>
-                <Text className="text-blue-500 font-bold text-2xl">
+                <Text className="text-green-500 font-bold text-2xl">
                   No more new photos to add to recipe
                 </Text>
                 <Button

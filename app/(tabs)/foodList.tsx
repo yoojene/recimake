@@ -1,4 +1,11 @@
-import { StyleSheet, ScrollView, RefreshControl, View } from "react-native";
+import {
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+  View,
+  Text,
+  Button,
+} from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { useCallback, useState } from "react";
 import useAppStore from "@/store/useAppStore";
@@ -8,6 +15,12 @@ import PhotoListBottomSheet from "@/components/PhotoList/PhotoListBottomSheet";
 
 export default function FoodList() {
   const photos = useAppStore((state) => state.photos);
+
+  const bottomSheetRef = useAppStore((state) => state.bottomSheetRef);
+
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  // bottomSheetRef?.current?.present();
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -22,7 +35,7 @@ export default function FoodList() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {photos.length > 0 ? (
+      {photos.filter((p) => p.status === "new").length > 0 ? (
         <>
           <ScrollView
             refreshControl={
@@ -34,9 +47,36 @@ export default function FoodList() {
           <PhotoListBottomSheet />
         </>
       ) : (
-        <View style={styles.noPhotosContainer}>
-          <ThemedText type="subtitle">No photos saved</ThemedText>
-        </View>
+        <>
+          <View style={styles.noPhotosContainer}>
+            {/* <ThemedText type="subtitle">No new photos</ThemedText> */}
+            {photos.filter((p) => p.status === "saved").length > 0 ? (
+              <>
+                <Text className="text-blue-500 font-bold text-2xl">
+                  No more new photos to add to recipe
+                </Text>
+                <Button
+                  title={sheetOpen ? "Close Recipe List" : "Open Recipe List"}
+                  onPress={() => {
+                    setSheetOpen(true);
+                    bottomSheetRef?.current?.present();
+                    if (sheetOpen) {
+                      bottomSheetRef?.current?.close();
+                      setSheetOpen(false);
+                    }
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <Text className="text-black-500 font-bold text-2xl">
+                  No photos saved
+                </Text>
+              </>
+            )}
+          </View>
+          <PhotoListBottomSheet />
+        </>
       )}
     </SafeAreaView>
   );

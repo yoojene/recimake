@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage, StateStorage } from "zustand/middleware";
 import AsyncStorage from "expo-sqlite/kv-store";
 import { Photo } from "@/models/Photo.model";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 const storage: StateStorage = {
   getItem: async (name: string) => {
@@ -18,16 +19,20 @@ const storage: StateStorage = {
 
 type AppState = {
   photos: Photo[];
+  bottomSheetRef: React.RefObject<BottomSheetModal> | null;
 };
 
 export type Actions = {
   setPhotos: (photos: Photo[]) => void;
   reset: () => void;
   setPhotoStatus: (status: "new" | "saved", id: string) => void;
+  setBottomSheetRef: (ref: React.RefObject<BottomSheetModal>) => void;
+  
 };
 
 const initialState: AppState = {
   photos: [],
+  bottomSheetRef: null,
 };
 
 const useAppStore = create<AppState & Actions>()(
@@ -35,7 +40,7 @@ const useAppStore = create<AppState & Actions>()(
     (set, get) => ({
       photos: [],
       setPhotos: (photos) => set({ photos }),
-      setPhotoStatus: (status: "new" | "saved", id: string) =>  {
+      setPhotoStatus: (status: "new" | "saved", id: string) => {
         const photos = get().photos;
         const index = photos.findIndex((photo) => photo.id === id);
         if (index !== -1) {
@@ -44,6 +49,8 @@ const useAppStore = create<AppState & Actions>()(
           set({ photos: updatedPhotos });
         }
       },
+      bottomSheetRef: null,
+      setBottomSheetRef: (bottomSheetRef) => set({ bottomSheetRef }),
       reset: () => set(initialState),
     }),
     {

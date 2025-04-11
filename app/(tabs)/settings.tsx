@@ -13,7 +13,7 @@ import {
   Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import "../../global.css";
+// import "../../global.css";
 
 export default function Settings() {
   const reset = useAppStore((state) => state.reset);
@@ -76,7 +76,6 @@ export default function Settings() {
   return (
     <SafeAreaView style={styles.container}>
       <ThemedText type="subtitle">Settings</ThemedText>
-      {/* <View className="w-10 h-10 bg-blue-500" /> */}
 
       <ThemedText type="default">Debugging</ThemedText>
 

@@ -17,10 +17,13 @@ import { useState } from "react";
 export function PhotoList() {
   const photos = useAppStore((state) => state.photos);
   const [statusChange, setStatusChange] = useState<boolean>(false); // Used to trigger FlashList re-render
+  const bottomSheetRef = useAppStore((state) => state.bottomSheetRef);
 
-  const sortedPhotos = [...photos].sort((a: Photo, b: Photo) => {
-    return (new Date(b.date) as any) - (new Date(a.date) as any);
-  });
+  const sortedPhotos = [...photos]
+    .sort((a: Photo, b: Photo) => {
+      return (new Date(b.date) as any) - (new Date(a.date) as any);
+    })
+    .filter((p) => p.status === "new");
 
   return (
     <View style={styles.container}>
@@ -32,6 +35,7 @@ export function PhotoList() {
             extraData: {
               setStatusChange: setStatusChange,
               statusChange: statusChange,
+              bottomSheetRef: bottomSheetRef,
             },
           })
         }
@@ -44,12 +48,13 @@ export function PhotoList() {
 
 const renderItem = ({
   item: item,
-  extraData: { setStatusChange, statusChange },
+  extraData: { setStatusChange, statusChange, bottomSheetRef },
 }: {
   item: ListRenderItemInfo<Photo>;
   extraData: {
     setStatusChange: React.Dispatch<React.SetStateAction<boolean>>;
     statusChange: boolean;
+    bottomSheetRef: React.RefObject<any>;
   };
 }) => {
   const photoItem: Photo = item.item;
@@ -61,7 +66,14 @@ const renderItem = ({
         enableTrackpadTwoFingerGesture
         rightThreshold={40}
         renderRightActions={(prog, drag) =>
-          RightAction(prog, drag, photoItem, setStatusChange, statusChange)
+          RightAction(
+            prog,
+            drag,
+            photoItem,
+            setStatusChange,
+            statusChange,
+            bottomSheetRef
+          )
         }
         renderLeftActions={(prog, drag) => LeftAction(prog, drag, photoItem)}
       >
@@ -139,11 +151,13 @@ const onRightActionPressed = (
   item: Photo,
   setPhotoStatus: (status: "new" | "saved", id: string) => void,
   setStatusChange: React.Dispatch<React.SetStateAction<boolean>>,
-  statusChange: boolean
+  statusChange: boolean,
+  bottomSheetRef: React.RefObject<any>
 ) => {
   console.log("Right action pressed");
   setPhotoStatus("saved", item.id);
   setStatusChange(!statusChange);
+  bottomSheetRef.current.present();
   // TODO add to recipe
 };
 
@@ -152,7 +166,8 @@ const RightAction = (
   drag: SharedValue<number>,
   item: Photo,
   setStatusChange: React.Dispatch<React.SetStateAction<boolean>>,
-  statusChange: boolean
+  statusChange: boolean,
+  bottomSheetRef: React.RefObject<any>
 ) => {
   const setPhotoStatus = useAppStore((state) => state.setPhotoStatus);
 
@@ -170,7 +185,8 @@ const RightAction = (
               item,
               setPhotoStatus,
               setStatusChange,
-              statusChange
+              statusChange,
+              bottomSheetRef
             )
           }
         >

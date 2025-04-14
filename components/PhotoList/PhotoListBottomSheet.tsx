@@ -4,21 +4,13 @@ import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import {
-  useRef,
-  useMemo,
-  useCallback,
-  useImperativeHandle,
-  useState,
-} from "react";
+import { useRef, useMemo, useCallback, useEffect } from "react";
 import {
   StyleSheet,
   Text,
   View,
   Image,
   Button,
-  ScrollView,
-  TouchableOpacity,
   Dimensions,
 } from "react-native";
 // import { Image } from "expo-image";
@@ -33,10 +25,12 @@ export default function PhotoListBottomSheet() {
   const gallery = useRef<GalleryRef>(null);
 
   const sheetRef = useRef<BottomSheetModal>(null);
-
   const setBottomSheetRef = useAppStore((state) => state.setBottomSheetRef);
+  const setSheetOpen = useAppStore((state) => state.setSheetOpen);
 
-  setBottomSheetRef(sheetRef);
+  useEffect(() => {
+    setBottomSheetRef(sheetRef);
+  }, []);
 
   // sheetRef.current?.present();
 
@@ -47,6 +41,9 @@ export default function PhotoListBottomSheet() {
   // callbacks
   const handleSheetChange = useCallback((index: any) => {
     console.log("handleSheetChange", index);
+    if (index === -1) {
+      setSheetOpen(false);
+    }
   }, []);
 
   const renderFooter = useCallback(() => {
@@ -94,7 +91,7 @@ export default function PhotoListBottomSheet() {
               {photos
                 .filter((p) => p.status === "saved")
                 .map((photo) => (
-                  <View className="flex-col justify-start p-4">
+                  <View key={photo.id} className="flex-col justify-start p-4">
                     <Zoomable isDoubleTapEnabled>
                       <Image
                         key={photo.id}

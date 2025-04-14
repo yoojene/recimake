@@ -18,7 +18,8 @@ export default function FoodList() {
 
   const bottomSheetRef = useAppStore((state) => state.bottomSheetRef);
 
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const sheetOpen = useAppStore((state) => state.sheetOpen);
+  const setSheetOpen = useAppStore((state) => state.setSheetOpen);
 
   const [refreshing, setRefreshing] = useState(false);
 

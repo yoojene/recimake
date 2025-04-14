@@ -20,6 +20,7 @@ const storage: StateStorage = {
 type AppState = {
   photos: Photo[];
   bottomSheetRef: React.RefObject<BottomSheetModal> | null;
+  sheetOpen: boolean;
 };
 
 export type Actions = {
@@ -27,12 +28,15 @@ export type Actions = {
   reset: () => void;
   setPhotoStatus: (status: "new" | "saved", id: string) => void;
   setBottomSheetRef: (ref: React.RefObject<BottomSheetModal>) => void;
+  setSheetOpen: (sheetOpen: boolean) => void;
+
   
 };
 
 const initialState: AppState = {
   photos: [],
   bottomSheetRef: null,
+  sheetOpen: false,
 };
 
 const useAppStore = create<AppState & Actions>()(
@@ -51,6 +55,8 @@ const useAppStore = create<AppState & Actions>()(
       },
       bottomSheetRef: null,
       setBottomSheetRef: (bottomSheetRef) => set({ bottomSheetRef }),
+      sheetOpen: false,
+      setSheetOpen: (sheetOpen) => set({ sheetOpen }),
       reset: () => set(initialState),
     }),
     {

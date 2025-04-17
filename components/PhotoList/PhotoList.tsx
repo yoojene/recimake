@@ -12,9 +12,12 @@ import Reanimated, {
 } from "react-native-reanimated";
 import { Photo } from "@/models/Photo.model";
 import { usePhotoLibrary } from "@/hooks/usePhotoLibrary";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 export function PhotoList() {
+  const swipeableRef = useRef(null);
+
   const photos = useAppStore((state) => state.photos);
   const [statusChange, setStatusChange] = useState<boolean>(false); // Used to trigger FlashList re-render
   const bottomSheetRef = useAppStore((state) => state.bottomSheetRef);
@@ -36,6 +39,7 @@ export function PhotoList() {
               setStatusChange: setStatusChange,
               statusChange: statusChange,
               bottomSheetRef: bottomSheetRef,
+              swipeableRef: swipeableRef,
             },
           })
         }
@@ -48,19 +52,22 @@ export function PhotoList() {
 
 const renderItem = ({
   item: item,
-  extraData: { setStatusChange, statusChange, bottomSheetRef },
+  extraData: { setStatusChange, statusChange, bottomSheetRef, swipeableRef },
 }: {
   item: ListRenderItemInfo<Photo>;
   extraData: {
     setStatusChange: React.Dispatch<React.SetStateAction<boolean>>;
     statusChange: boolean;
-    bottomSheetRef: React.RefObject<any>;
+    bottomSheetRef: React.RefObject<BottomSheetModal> | null;
+    swipeableRef: React.RefObject<any>;
   };
 }) => {
   const photoItem: Photo = item.item;
+
   return (
     <GestureHandlerRootView>
       <ReanimatedSwipeable
+        ref={swipeableRef}
         containerStyle={styles.swipeable}
         friction={2}
         enableTrackpadTwoFingerGesture
@@ -72,7 +79,8 @@ const renderItem = ({
             photoItem,
             setStatusChange,
             statusChange,
-            bottomSheetRef
+            bottomSheetRef,
+            swipeableRef
           )
         }
         renderLeftActions={(prog, drag) => LeftAction(prog, drag, photoItem)}
@@ -152,13 +160,15 @@ const onRightActionPressed = (
   setPhotoStatus: (status: "new" | "saved", id: string) => void,
   setStatusChange: React.Dispatch<React.SetStateAction<boolean>>,
   statusChange: boolean,
-  bottomSheetRef: React.RefObject<any>
+  bottomSheetRef: React.RefObject<BottomSheetModal> | null,
+  swipeableRef: React.RefObject<any>
 ) => {
   console.log("Right action pressed");
   setPhotoStatus("saved", item.id);
+
   setStatusChange(!statusChange);
-  bottomSheetRef.current.present();
-  // TODO add to recipe
+  bottomSheetRef?.current?.present();
+  swipeableRef.current.close();
 };
 
 const RightAction = (
@@ -167,7 +177,8 @@ const RightAction = (
   item: Photo,
   setStatusChange: React.Dispatch<React.SetStateAction<boolean>>,
   statusChange: boolean,
-  bottomSheetRef: React.RefObject<any>
+  bottomSheetRef: React.RefObject<BottomSheetModal> | null,
+  swipeableRef: React.RefObject<any>
 ) => {
   const setPhotoStatus = useAppStore((state) => state.setPhotoStatus);
 
@@ -186,7 +197,8 @@ const RightAction = (
               setPhotoStatus,
               setStatusChange,
               statusChange,
-              bottomSheetRef
+              bottomSheetRef,
+              swipeableRef
             )
           }
         >

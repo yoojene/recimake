@@ -1,7 +1,7 @@
 import useAppStore from "@/store/useAppStore";
-import BottomSheet, {
+import {
+  BottomSheetFlashList,
   BottomSheetModal,
-  BottomSheetScrollView,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { useRef, useMemo, useCallback, useEffect } from "react";
@@ -12,18 +12,12 @@ import {
   Image,
   Button,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
-// import { Image } from "expo-image";
-
-import AwesomeGallery, { GalleryRef } from "react-native-awesome-gallery";
-import { Zoomable } from "@likashefqet/react-native-image-zoom";
-
-// import { cssInterop } from "nativewind";
-// cssInterop(Image, { className: "style" });
+import { useImage } from "../ImageView/ImageView";
+import { Photo } from "@/models/Photo.model";
 
 export default function PhotoListBottomSheet() {
-  const gallery = useRef<GalleryRef>(null);
-
   const sheetRef = useRef<BottomSheetModal>(null);
   const setBottomSheetRef = useAppStore((state) => state.setBottomSheetRef);
   const setSheetOpen = useAppStore((state) => state.setSheetOpen);
@@ -32,11 +26,12 @@ export default function PhotoListBottomSheet() {
     setBottomSheetRef(sheetRef);
   }, []);
 
-  // sheetRef.current?.present();
+  const snapPoints = useMemo(() => ["90%"], []);
 
-  const snapPoints = useMemo(() => ["10%", "50%", "75%", "100%"], []);
-
+  // Store
   const photos = useAppStore((state) => state.photos);
+
+  const { showImage } = useImage();
 
   // callbacks
   const handleSheetChange = useCallback((index: any) => {
@@ -48,11 +43,7 @@ export default function PhotoListBottomSheet() {
 
   const renderFooter = useCallback(() => {
     return (
-      <View
-        style={{ marginBottom: 200 }}
-        className="w-full h-32 mb-36 bg-red-500"
-      >
-        {" "}
+      <View className="w-full h-16">
         <Button
           title="Generate Recipe"
           onPress={() => console.log("geerate button pressed")}
@@ -61,53 +52,41 @@ export default function PhotoListBottomSheet() {
     );
   }, []);
 
-  const renderItem = useCallback(({ item }: { item: { uri: string } }) => {
+  const renderItem = useCallback(({ item }: { item: Photo }) => {
+    const photo: Photo = item;
     return (
-      <View className="flex-col justify-start p-4">
+      <TouchableOpacity
+        className="border-b-4 border-gray-100 bg-sky-50 items-center p-4"
+        key={photo.id}
+        onPress={() => showImage(photo.file.uri)}
+      >
         <Image
-          className="w-28 h-28 rounded-lg"
-          source={{ uri: item.uri }}
-        ></Image>
-      </View>
+          source={{ uri: photo.file.uri }}
+          className="w-36 h-36 rounded-lg"
+        />
+      </TouchableOpacity>
     );
   }, []);
-
-  const hide = () => {};
 
   return (
     <BottomSheetModal
       ref={sheetRef}
       snapPoints={snapPoints}
       enableDynamicSizing={false}
+      enableOverDrag={false}
       onChange={handleSheetChange}
-      // footerComponent={renderFooter}
+      footerComponent={renderFooter}
     >
       <BottomSheetView style={styles.contentContainer}>
         {photos && (
           <>
-            <BottomSheetScrollView
+            <BottomSheetFlashList
               contentContainerClassName={"flex-col justify-start p-4"}
-            >
-              {photos
-                .filter((p) => p.status === "saved")
-                .map((photo) => (
-                  <View key={photo.id} className="flex-col justify-start p-4">
-                    <Zoomable isDoubleTapEnabled>
-                      <Image
-                        key={photo.id}
-                        className="w-28 h-28 rounded-lg"
-                        source={{ uri: photo.file.uri }}
-                      ></Image>
-                    </Zoomable>
-                  </View>
-                ))}
-              <View className="w-full h-16">
-                <Button
-                  title="Generate Recipe"
-                  onPress={() => console.log("geerate button pressed")}
-                />
-              </View>
-            </BottomSheetScrollView>
+              data={photos as any}
+              renderItem={renderItem}
+              ListFooterComponent={renderFooter}
+              estimatedItemSize={98}
+            ></BottomSheetFlashList>
           </>
         )}
         {photos.length === 0 && (
@@ -123,14 +102,17 @@ export default function PhotoListBottomSheet() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: 100,
-    backgroundColor: "red",
+    paddingTop: 200,
   },
-
   contentContainer: {
     flex: 1,
+    backgroundColor: "white",
   },
-
+  itemContainer: {
+    padding: 6,
+    margin: 6,
+    backgroundColor: "#eee",
+  },
   overlayContainer: {
     position: "absolute",
     top: 0,

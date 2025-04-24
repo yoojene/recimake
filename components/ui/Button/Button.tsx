@@ -9,6 +9,7 @@ interface ButtonProps {
   textColor?: string;
   icon?: IconSymbolName;
   iconColor?: string;
+  className?: string;
   children: React.ReactNode;
 }
 
@@ -20,10 +21,13 @@ export default function Button({
   textColor = "text-white",
   icon,
   iconColor,
+  className,
 }: ButtonProps) {
+  const defaultClasses = `${backgroundColor} hover:bg-blue-700 active:${backgroundActiveColor} text-white font-bold py-4 px-16 rounded`;
+
   return (
     <Pressable
-      className={`${backgroundColor} hover:bg-blue-700 active:${backgroundActiveColor} text-white font-bold py-4 px-16 rounded`}
+      className={className ? `${defaultClasses} ${className}` : defaultClasses}
       onPress={onPress}
     >
       {({ pressed }) => (

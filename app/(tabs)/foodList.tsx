@@ -4,15 +4,13 @@ import {
   RefreshControl,
   View,
   Text,
-  Button,
 } from "react-native";
-import { ThemedText } from "@/components/ThemedText";
 import { useCallback, useState } from "react";
 import useAppStore from "@/store/useAppStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PhotoList } from "@/components/PhotoList/PhotoList";
 import PhotoListBottomSheet from "@/components/PhotoList/PhotoListBottomSheet";
-
+import Button from "@/components/ui/Button/Button";
 export default function FoodList() {
   const photos = useAppStore((state) => state.photos);
 
@@ -48,14 +46,13 @@ export default function FoodList() {
       ) : (
         <>
           <View style={styles.noPhotosContainer}>
-            {/* <ThemedText type="subtitle">No new photos</ThemedText> */}
             {photos.filter((p) => p.status === "saved").length > 0 ? (
               <>
                 <Text className="text-green-500 font-bold text-2xl">
                   No more new photos to add to recipe
                 </Text>
+
                 <Button
-                  title={sheetOpen ? "Close Recipe List" : "Open Recipe List"}
                   onPress={() => {
                     setSheetOpen(true);
                     bottomSheetRef?.current?.present();
@@ -64,7 +61,10 @@ export default function FoodList() {
                       setSheetOpen(false);
                     }
                   }}
-                />
+                  backgroundColor="bg-green-500"
+                >
+                  {sheetOpen ? "Close Recipe List" : "Open Recipe List"}
+                </Button>
               </>
             ) : (
               <>
@@ -106,5 +106,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 36,
     alignItems: "center",
+  },
+
+  button: {
+    backgroundColor: "blue",
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "red",
   },
 });

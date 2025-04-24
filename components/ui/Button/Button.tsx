@@ -23,26 +23,24 @@ export default function Button({
   iconColor,
   className,
 }: ButtonProps) {
-  const defaultClasses = `${backgroundColor} hover:bg-blue-700 active:${backgroundActiveColor} text-white font-bold py-4 px-16 rounded`;
+  const defaultClasses = `${backgroundColor} hover:bg-blue-700 active:${backgroundActiveColor} text-white font-bold py-4 px-16 rounded-md`;
 
   return (
     <Pressable
       className={className ? `${defaultClasses} ${className}` : defaultClasses}
       onPress={onPress}
     >
-      {({ pressed }) => (
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          {icon ? (
-            <IconSymbol name={icon} color={iconColor}></IconSymbol>
-          ) : null}
-          <Text className={textColor}>{children}</Text>
-        </View>
-      )}
+      <View className="flex-row items-center">
+        {icon ? (
+          <IconSymbol
+            style={{ marginRight: 4 }}
+            name={icon}
+            color={iconColor}
+          ></IconSymbol>
+        ) : null}
+        <Text className={textColor}>{children}</Text>
+      </View>
+      {/* )} */}
     </Pressable>
   );
 }

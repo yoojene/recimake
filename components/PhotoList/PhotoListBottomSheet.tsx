@@ -10,12 +10,12 @@ import {
   Text,
   View,
   Image,
-  Button,
   Dimensions,
   TouchableOpacity,
 } from "react-native";
 import { useImage } from "../ImageView/ImageView";
 import { Photo } from "@/models/Photo.model";
+import Button from "../ui/Button/Button";
 
 export default function PhotoListBottomSheet() {
   const sheetRef = useRef<BottomSheetModal>(null);
@@ -43,11 +43,10 @@ export default function PhotoListBottomSheet() {
 
   const renderFooter = useCallback(() => {
     return (
-      <View className="w-full h-16">
-        <Button
-          title="Generate Recipe"
-          onPress={() => console.log("geerate button pressed")}
-        />
+      <View className="flex-1 justify-center items-center mt-4">
+        <Button onPress={() => console.log("geerate button pressed")}>
+          Generate Recipe
+        </Button>
       </View>
     );
   }, []);
@@ -77,7 +76,7 @@ export default function PhotoListBottomSheet() {
       onChange={handleSheetChange}
       footerComponent={renderFooter}
     >
-      <BottomSheetView style={styles.contentContainer}>
+      <BottomSheetView className="flex-1 bg-white-100">
         {photos && (
           <>
             <BottomSheetFlashList
@@ -98,55 +97,3 @@ export default function PhotoListBottomSheet() {
     </BottomSheetModal>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 200,
-  },
-  contentContainer: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  itemContainer: {
-    padding: 6,
-    margin: 6,
-    backgroundColor: "#eee",
-  },
-  overlayContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 1000000,
-  },
-  overlayBackground: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(90, 90, 90, 0.95)",
-  },
-  overlayContent: {
-    flex: 1,
-    marginHorizontal: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  closeButton: {
-    position: "absolute",
-    top: 60,
-    right: 10,
-    padding: 5,
-    backgroundColor: "#007AFF",
-    borderRadius: 20,
-    zIndex: 100001,
-  },
-  closeIcon: {
-    width: 24,
-    height: 24,
-    tintColor: "#FFFFFF",
-  },
-  fullScreenImage: {
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
-  },
-});

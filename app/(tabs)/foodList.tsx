@@ -11,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { PhotoList } from "@/components/PhotoList/PhotoList";
 import PhotoListBottomSheet from "@/components/PhotoList/PhotoListBottomSheet";
 import Button from "@/components/ui/Button/Button";
+
 export default function FoodList() {
   const photos = useAppStore((state) => state.photos);
 
@@ -53,6 +54,7 @@ export default function FoodList() {
                 </Text>
 
                 <Button
+                  className="mt-8"
                   onPress={() => {
                     setSheetOpen(true);
                     bottomSheetRef?.current?.present();

@@ -5,22 +5,14 @@ import {
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { useRef, useMemo, useCallback, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  Dimensions,
-  TouchableOpacity,
-} from "react-native";
+import { Text, View, Image, TouchableOpacity } from "react-native";
 import { useImage } from "../ImageView/ImageView";
 import { Photo } from "@/models/Photo.model";
 import Button from "../ui/Button/Button";
+import { useRecipe } from "@/hooks/useRecipe";
 
 export default function PhotoListBottomSheet() {
   const sheetRef = useRef<BottomSheetModal>(null);
-  const setBottomSheetRef = useAppStore((state) => state.setBottomSheetRef);
-  const setSheetOpen = useAppStore((state) => state.setSheetOpen);
 
   useEffect(() => {
     setBottomSheetRef(sheetRef);
@@ -30,9 +22,12 @@ export default function PhotoListBottomSheet() {
 
   // Store
   const photos = useAppStore((state) => state.photos);
+  const setBottomSheetRef = useAppStore((state) => state.setBottomSheetRef);
+  const setSheetOpen = useAppStore((state) => state.setSheetOpen);
 
   const { showImage } = useImage();
 
+  const { generateRecipe } = useRecipe();
   // callbacks
   const handleSheetChange = useCallback((index: any) => {
     console.log("handleSheetChange", index);
@@ -44,9 +39,7 @@ export default function PhotoListBottomSheet() {
   const renderFooter = useCallback(() => {
     return (
       <View className="flex-1 justify-center items-center mt-4">
-        <Button onPress={() => console.log("geerate button pressed")}>
-          Generate Recipe
-        </Button>
+        <Button onPress={generateRecipe}>Generate Recipe</Button>
       </View>
     );
   }, []);

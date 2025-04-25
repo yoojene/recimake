@@ -63,7 +63,8 @@ export default function FoodList() {
                       setSheetOpen(false);
                     }
                   }}
-                  backgroundColor="bg-green-500"
+                  backgroundColor={"bg-gray-500"}
+                  backgroundActiveColor={"bg-gray-400"}
                 >
                   {sheetOpen ? "Close Recipe List" : "Open Recipe List"}
                 </Button>

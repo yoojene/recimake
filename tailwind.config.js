@@ -9,5 +9,6 @@ module.exports = {
   plugins: [],
   corePlugin: {
     textOpacity: true,
+    backgroundOpacity: true,
   },
 };

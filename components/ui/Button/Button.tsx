@@ -1,11 +1,11 @@
 import { Text, Pressable, View } from "react-native";
 import { IconSymbol, IconSymbolName } from "../IconSymbol";
+import { useState } from "react";
 
 // Simple button component with optional icon
 interface ButtonProps {
   onPress: () => void;
-  backgroundColor?: string;
-  backgroundActiveColor?: string;
+  color: string;
   textColor?: string;
   icon?: IconSymbolName;
   iconColor?: string;
@@ -16,22 +16,22 @@ interface ButtonProps {
 export default function Button({
   onPress,
   children,
-  backgroundColor = "bg-blue-500",
-  backgroundActiveColor = "bg-blue-400",
+  color,
   textColor = "text-white",
   icon,
   iconColor,
   className,
 }: ButtonProps) {
-  const defaultClasses = `${backgroundColor} active:${backgroundActiveColor} text-white font-bold py-4 px-16 rounded-md`;
+  const [isActive, setIsActive] = useState(false);
+
+  const buttonStyle = isActive ? `bg-${color}-400` : `bg-${color}-500`;
 
   return (
     <Pressable
-      className={
-        className ? `${defaultClasses} ${className}` : `${defaultClasses}`
-      }
+      onPressIn={() => setIsActive(true)}
+      onPressOut={() => setIsActive(false)}
       onPress={onPress}
-      // className="bg-gray-500 active:bg-gray-400 text-white font-bold py-4 px-16 rounded-md"
+      className={`${buttonStyle} text-white font-bold py-4 px-16 rounded-md`}
     >
       <View className="flex-row items-center">
         {icon ? (
@@ -39,7 +39,7 @@ export default function Button({
             style={{ marginRight: 4 }}
             name={icon}
             color={iconColor}
-          ></IconSymbol>
+          />
         ) : null}
         <Text className={textColor}>{children}</Text>
       </View>

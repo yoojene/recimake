@@ -52,7 +52,6 @@ export default function FoodList() {
                 <Text className="text-green-500 font-bold text-2xl">
                   No more new photos to add to recipe
                 </Text>
-
                 <Button
                   className="mt-8"
                   onPress={() => {
@@ -63,8 +62,7 @@ export default function FoodList() {
                       setSheetOpen(false);
                     }
                   }}
-                  backgroundColor={"bg-gray-500"}
-                  backgroundActiveColor={"bg-gray-400"}
+                  color={"yellow"}
                 >
                   {sheetOpen ? "Close Recipe List" : "Open Recipe List"}
                 </Button>

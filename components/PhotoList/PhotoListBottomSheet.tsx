@@ -39,7 +39,7 @@ export default function PhotoListBottomSheet() {
   const renderFooter = useCallback(() => {
     return (
       <View className="flex-1 justify-center items-center mt-4">
-        <Button onPress={generateRecipe} color="blue">
+        <Button onPress={generateRecipe} color="green">
           Generate Recipe
         </Button>
       </View>

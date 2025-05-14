@@ -31,7 +31,12 @@ export default function Button({
       onPressIn={() => setIsActive(true)}
       onPressOut={() => setIsActive(false)}
       onPress={onPress}
-      className={`${buttonStyle} text-white font-bold py-4 px-16 rounded-md`}
+      className={
+        className
+          ? `${buttonStyle} active:bg-${color}-400 font-bold py-4 px-16 rounded-md ${className}`
+          : `${buttonStyle} active:bg-${color}-400 font-bold py-4 px-16 rounded-md`
+      }
+      // className={`bg-green-500 active:bg-green-400 font-bold py-4 px-16 rounded-md`}
     >
       <View className="flex-row items-center">
         {icon ? (

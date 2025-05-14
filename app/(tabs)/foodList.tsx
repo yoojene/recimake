@@ -53,7 +53,7 @@ export default function FoodList() {
                   No more new photos to add to recipe
                 </Text>
                 <Button
-                  className="mt-8"
+                  className="mt-4"
                   onPress={() => {
                     setSheetOpen(true);
                     bottomSheetRef?.current?.present();
@@ -62,7 +62,7 @@ export default function FoodList() {
                       setSheetOpen(false);
                     }
                   }}
-                  color={"yellow"}
+                  color={"green"}
                 >
                   {sheetOpen ? "Close Recipe List" : "Open Recipe List"}
                 </Button>

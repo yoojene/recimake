@@ -1,7 +1,14 @@
+import { router } from "expo-router";
+import useAppStore from "@/store/useAppStore";
+
 export function useRecipe() {
-  // TODO call APIs
+  const bottomSheetRef = useAppStore((state) => state.bottomSheetRef);
+  const setSheetOpen = useAppStore((state) => state.setSheetOpen);
+
   const generateRecipe = () => {
-    return console.log("Generate recipe");
+    bottomSheetRef?.current?.dismiss();
+    setSheetOpen(false);
+    router.push("/recipe");
   };
 
   return {

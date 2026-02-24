@@ -5,12 +5,12 @@ import {
   useCameraPermissions,
 } from "expo-camera";
 import { Image } from "expo-image";
-import * as ImagePicker from "expo-image-picker";
 
 import { router } from "expo-router";
 
 import { useRef, useState } from "react";
-import { View, TouchableOpacity, Text, StyleSheet, Button } from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { usePhotoLibrary } from "@/hooks/usePhotoLibrary";
@@ -18,6 +18,7 @@ import { usePhotoLibrary } from "@/hooks/usePhotoLibrary";
 export default function CameraLayout() {
   const ref = useRef<CameraView>(null);
   const [uri, setUri] = useState<string | null>(null);
+  const insets = useSafeAreaInsets();
 
   const [permission, requestPermission] = useCameraPermissions();
   const [facing, setFacing] = useState<CameraType>("back");
@@ -87,15 +88,25 @@ export default function CameraLayout() {
       <View style={styles.previewContainer}>
         <Image
           source={{ uri }}
-          contentFit="contain"
+          contentFit="cover"
           style={styles.previewImage}
         ></Image>
-        <View style={styles.previewButtonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => setUri(null)}>
-            <Ionicons name={"camera"} color="lightblue" size={60} />
+        <View
+          style={[styles.previewButtonContainer, { bottom: Math.max(16, insets.bottom + 8) }]}
+        >
+          <TouchableOpacity
+            style={[styles.bottomActionButton, styles.previewActionButton]}
+            activeOpacity={0.8}
+            onPress={() => setUri(null)}
+          >
+            <Ionicons name={"camera"} color="lightblue" size={36} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={savePhoto}>
-            <Ionicons name={"save-outline"} color="lightblue" size={60} />
+          <TouchableOpacity
+            style={[styles.bottomActionButton, styles.previewActionButton]}
+            activeOpacity={0.8}
+            onPress={savePhoto}
+          >
+            <Ionicons name={"save-outline"} color="lightblue" size={36} />
           </TouchableOpacity>
         </View>
       </View>
@@ -107,29 +118,39 @@ export default function CameraLayout() {
       <View style={styles.container}>
         <CameraView ref={ref} style={styles.camera} facing={facing}>
           <TouchableOpacity
-            style={styles.closeCameraButton}
+            style={[styles.closeCameraButton, { top: Math.max(14, insets.top + 4) }]}
+            activeOpacity={0.8}
             onPress={() => {
               router.back();
             }}
           >
-            <FontAwesome name="close" size={50} color="lightblue" />
+            <Ionicons name="close" size={34} color="lightblue" />
           </TouchableOpacity>
-          <View style={styles.buttonContainer}>
+          <View style={[styles.buttonContainer, { bottom: Math.max(16, insets.bottom + 8) }]}>
             <TouchableOpacity
-              style={styles.button}
+              style={styles.bottomActionButton}
+              activeOpacity={0.8}
               onPress={() => setFacing(facing === "back" ? "front" : "back")}
             >
               <Ionicons
                 name={facing === "back" ? "camera-reverse" : "camera"}
                 color="lightblue"
-                size={50}
+                size={34}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={takePhoto}>
+            <TouchableOpacity
+              style={[styles.bottomActionButton, styles.captureButton]}
+              activeOpacity={0.8}
+              onPress={takePhoto}
+            >
               <FontAwesome name="circle" size={64} color="lightblue" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={selectImage}>
-              <Ionicons name="images-outline" size={50} color="lightblue" />
+            <TouchableOpacity
+              style={styles.bottomActionButton}
+              activeOpacity={0.8}
+              onPress={selectImage}
+            >
+              <Ionicons name="images-outline" size={34} color="lightblue" />
             </TouchableOpacity>
           </View>
         </CameraView>
@@ -146,10 +167,7 @@ export default function CameraLayout() {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 30, // TODO safe area
     flex: 1,
-
-    justifyContent: "center",
   },
   message: {
     textAlign: "center",
@@ -166,12 +184,13 @@ const styles = StyleSheet.create({
     margin: 12,
   },
   buttonContainer: {
-    flex: 1,
+    position: "absolute",
+    left: 12,
+    right: 12,
+    bottom: 30,
     flexDirection: "row",
     justifyContent: "space-between",
     backgroundColor: "transparent",
-
-    marginBottom: 50,
   },
   permissionButton: {
     // flex: 1,
@@ -184,10 +203,36 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   closeCameraButton: {
-    alignSelf: "flex-start",
-    // backgroundColor: "grey",
-    // borderRadius: 10,
-    padding: 10,
+    position: "absolute",
+    top: 14,
+    left: 14,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.35)",
+    zIndex: 10,
+  },
+  bottomActionButton: {
+    width: 74,
+    height: 74,
+    borderRadius: 37,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.35)",
+  },
+  captureButton: {
+    width: 86,
+    height: 86,
+    borderRadius: 43,
+    marginTop: -6,
+    borderWidth: 0,
+  },
+  previewActionButton: {
+    width: 82,
+    height: 82,
+    borderRadius: 41,
   },
   text: {
     fontSize: 24,
@@ -196,19 +241,16 @@ const styles = StyleSheet.create({
   },
   previewContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: "black",
   },
   previewImage: {
-    flex: 1,
-    width: "100%",
-    aspectRatio: 1,
+    ...StyleSheet.absoluteFillObject,
   },
   previewButtonContainer: {
-    // flex: 1,
+    position: "absolute",
+    left: 12,
+    right: 12,
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 10,
-    // backgroundColor: "transparent",
   },
 });

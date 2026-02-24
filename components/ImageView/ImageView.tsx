@@ -11,7 +11,7 @@ import React, {
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Image } from "expo-image";
 import { Zoomable } from "@likashefqet/react-native-image-zoom";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 // Full screen image viewer with zoom functionality
 // Ref: https://blog.andrewmchester.com/react-native-expo-full-screen-image-viewer-with-zoom-made-simple/
@@ -67,8 +67,8 @@ const ImageView = forwardRef((props, ref) => {
     <View style={styles.overlayContainer}>
       <View style={styles.overlayBackground} />
       <View style={styles.overlayContent}>
-        <TouchableOpacity style={styles.closeButton} onPress={hide}>
-          <FontAwesome name="close" size={50} color="lightblue" />
+        <TouchableOpacity style={styles.closeButton} activeOpacity={0.8} onPress={hide}>
+          <Ionicons name="close" size={34} color="lightblue" />
         </TouchableOpacity>
         <Zoomable isDoubleTapEnabled>
           <Image
@@ -104,16 +104,14 @@ const styles = StyleSheet.create({
   closeButton: {
     position: "absolute",
     top: 60,
-    right: 10,
-    padding: 5,
-    backgroundColor: "#007AFF",
-    borderRadius: 20,
+    right: 14,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.35)",
     zIndex: 100001,
-  },
-  closeIcon: {
-    width: 24,
-    height: 24,
-    tintColor: "#FFFFFF",
   },
   fullScreenImage: {
     width: Dimensions.get("window").width,

@@ -5,7 +5,7 @@ import {
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { useRef, useMemo, useCallback, useEffect } from "react";
-import { Text, View, Image, TouchableOpacity } from "react-native";
+import { Text, View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useImage } from "../ImageView/ImageView";
 import { Photo } from "@/models/Photo.model";
 import Button from "../ui/Button/Button";
@@ -22,6 +22,14 @@ export default function PhotoListBottomSheet() {
 
   // Store
   const photos = useAppStore((state) => state.photos);
+  const savedPhotos = useMemo(
+    () =>
+      [...photos]
+        .filter((photo) => photo.status === "saved")
+        .sort((a, b) => (new Date(b.date) as any) - (new Date(a.date) as any)),
+    [photos]
+  );
+
   const setBottomSheetRef = useAppStore((state) => state.setBottomSheetRef);
   const setSheetOpen = useAppStore((state) => state.setSheetOpen);
 
@@ -38,29 +46,38 @@ export default function PhotoListBottomSheet() {
 
   const renderFooter = useCallback(() => {
     return (
-      <View className="flex-1 justify-center items-center mt-4">
+      <View style={styles.footerContainer}>
         <Button onPress={generateRecipe} color="green">
           Generate Recipe
         </Button>
       </View>
     );
-  }, []);
+  }, [generateRecipe]);
 
-  const renderItem = useCallback(({ item }: { item: Photo }) => {
-    const photo: Photo = item;
+  const renderHeader = useCallback(() => {
     return (
-      <TouchableOpacity
-        className="border-b-4 border-gray-100 bg-sky-50 items-center p-4"
-        key={photo.id}
-        onPress={() => showImage(photo.file.uri)}
-      >
-        <Image
-          source={{ uri: photo.file.uri }}
-          className="w-36 h-36 rounded-lg"
-        />
-      </TouchableOpacity>
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerTitle}>Recipe Photos</Text>
+      </View>
     );
   }, []);
+
+  const renderItem = useCallback(
+    ({ item }: { item: Photo }) => {
+      const photo: Photo = item;
+      return (
+        <TouchableOpacity
+          style={styles.photoCard}
+          activeOpacity={0.85}
+          key={photo.id}
+          onPress={() => showImage(photo.file.uri)}
+        >
+          <Image source={{ uri: photo.file.uri }} style={styles.photoImage} />
+        </TouchableOpacity>
+      );
+    },
+    [showImage]
+  );
 
   return (
     <BottomSheetModal
@@ -69,26 +86,99 @@ export default function PhotoListBottomSheet() {
       enableDynamicSizing={false}
       enableOverDrag={false}
       onChange={handleSheetChange}
-      footerComponent={renderFooter}
+      backgroundStyle={styles.sheetBackground}
+      handleIndicatorStyle={styles.sheetHandle}
     >
-      <BottomSheetView className="flex-1 bg-white-100">
-        {photos && (
-          <>
-            <BottomSheetFlashList
-              contentContainerClassName={"flex-col justify-start p-4"}
-              data={photos as any}
-              renderItem={renderItem}
-              ListFooterComponent={renderFooter}
-              estimatedItemSize={98}
-            ></BottomSheetFlashList>
-          </>
-        )}
-        {photos.length === 0 && (
-          <Text className="text-black-500 font-bold text-2xl text-center">
-            No photos saved yet
-          </Text>
+      <BottomSheetView style={styles.sheetContainer}>
+        {savedPhotos.length > 0 ? (
+          <BottomSheetFlashList
+            contentContainerStyle={styles.listContentContainer}
+            data={savedPhotos as any}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            ListHeaderComponent={renderHeader}
+            ListFooterComponent={renderFooter}
+            estimatedItemSize={180}
+          ></BottomSheetFlashList>
+        ) : (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyTitle}>No photos saved yet</Text>
+            <Text style={styles.emptySubtitle}>
+              Swipe right on photos in Food List to add them here
+            </Text>
+          </View>
         )}
       </BottomSheetView>
     </BottomSheetModal>
   );
 }
+
+const styles = StyleSheet.create({
+  sheetBackground: {
+    backgroundColor: "#F8FAFC",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  sheetHandle: {
+    backgroundColor: "#A1A1AA",
+    width: 48,
+  },
+  sheetContainer: {
+    flex: 1,
+    backgroundColor: "#F8FAFC",
+  },
+  listContentContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 24,
+    paddingTop: 4,
+  },
+  headerContainer: {
+    marginBottom: 10,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#11181C",
+  },
+  headerSubtitle: {
+    marginTop: 2,
+    fontSize: 14,
+    color: "#687076",
+  },
+  photoCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    marginBottom: 12,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#E4E4E7",
+  },
+  photoImage: {
+    width: "100%",
+    height: 220,
+    borderRadius: 12,
+  },
+  footerContainer: {
+    alignItems: "center",
+    marginTop: 6,
+    marginBottom: 20,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 24,
+  },
+  emptyTitle: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#11181C",
+    textAlign: "center",
+  },
+  emptySubtitle: {
+    marginTop: 8,
+    fontSize: 14,
+    color: "#687076",
+    textAlign: "center",
+  },
+});

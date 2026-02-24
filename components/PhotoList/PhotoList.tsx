@@ -45,10 +45,25 @@ export function PhotoList() {
         }
         estimatedItemSize={200}
         extraData={statusChange}
+        contentContainerStyle={styles.listContentContainer}
       />
     </View>
   );
 }
+
+const formatPhotoDate = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "Recently added";
+  }
+
+  return date.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+};
 
 const renderItem = ({
   item: item,
@@ -85,19 +100,17 @@ const renderItem = ({
         }
         renderLeftActions={(prog, drag) => LeftAction(prog, drag, photoItem)}
       >
-        <View style={{ flexDirection: "row", padding: 8 }}>
+        <View style={styles.rowCard}>
           <Image
             source={{ uri: photoItem.file.uri }}
-            style={{ width: 100, height: 100, borderRadius: 25 }}
+            style={styles.rowImage}
           ></Image>
-          <View
-            style={{
-              flexDirection: "column",
-              justifyContent: "center",
-              marginLeft: 8,
-            }}
-          >
-            <Text>{photoItem.status}</Text>
+          <View style={styles.rowContent}>
+            <Text style={styles.rowTitle}>New photo</Text>
+            <Text style={styles.rowSubtitle}>{formatPhotoDate(photoItem.date)}</Text>
+            <View style={styles.statusPill}>
+              <Text style={styles.statusPillText}>Ready to review</Text>
+            </View>
           </View>
         </View>
       </ReanimatedSwipeable>
@@ -118,29 +131,13 @@ const LeftAction = (
     };
   });
   return (
-    <Reanimated.View style={styleAnimation}>
+    <Reanimated.View style={[styleAnimation, styles.leftActionWrapper]}>
       <View style={styles.leftAction}>
         <HapticPressable
           onHapticPressed={() => onLeftActionPressed(item, deleteFile)}
         >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-              margin: 16,
-            }}
-          >
-            <Text
-              style={{
-                alignContent: "center",
-                fontWeight: "bold",
-                color: "white",
-              }}
-            >
-              Delete
-            </Text>
-            <IconSymbol size={35} name="trash" color={"#FFF"} />
+          <View style={styles.actionContent}>
+            <IconSymbol size={34} name="trash" color={"#FFF"} />
           </View>
         </HapticPressable>
       </View>
@@ -188,7 +185,7 @@ const RightAction = (
     };
   });
   return (
-    <Reanimated.View style={styleAnimation}>
+    <Reanimated.View style={[styleAnimation, styles.rightActionWrapper]}>
       <View style={styles.rightAction}>
         <HapticPressable
           onHapticPressed={() =>
@@ -202,22 +199,8 @@ const RightAction = (
             )
           }
         >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text
-              style={{
-                fontWeight: "bold",
-                color: "white",
-              }}
-            >
-              Add to recipe
-            </Text>
-            <IconSymbol size={35} name="plus.square.on.square" color={"#FFF"} />
+          <View style={styles.actionContent}>
+            <IconSymbol size={34} name="fork.knife" color={"#FFF"} />
           </View>
         </HapticPressable>
       </View>
@@ -228,6 +211,15 @@ const RightAction = (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingHorizontal: 12,
+  },
+  listContentContainer: {
+    paddingVertical: 8,
+  },
+  leftActionWrapper: {
+    marginVertical: 6,
+    borderRadius: 18,
+    overflow: "hidden",
   },
   leftAction: {
     width: 120,
@@ -236,6 +228,12 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 18,
+  },
+  rightActionWrapper: {
+    marginVertical: 6,
+    borderRadius: 18,
+    overflow: "hidden",
   },
   rightAction: {
     flexDirection: "column",
@@ -244,8 +242,58 @@ const styles = StyleSheet.create({
     width: 140,
     height: "100%",
     backgroundColor: "green",
+    borderRadius: 18,
   },
   swipeable: {
-    backgroundColor: "papayawhip",
+    borderRadius: 18,
+    marginVertical: 6,
+    overflow: "hidden",
+  },
+  rowCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 10,
+    minHeight: 112,
+  },
+  rowImage: {
+    width: 92,
+    height: 92,
+    borderRadius: 18,
+  },
+  rowContent: {
+    flex: 1,
+    marginLeft: 12,
+    justifyContent: "center",
+    gap: 4,
+  },
+  rowTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#11181C",
+  },
+  rowSubtitle: {
+    fontSize: 13,
+    color: "#687076",
+  },
+  statusPill: {
+    marginTop: 6,
+    alignSelf: "flex-start",
+    backgroundColor: "#E9F8EE",
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  statusPillText: {
+    color: "#1A7F37",
+    fontWeight: "600",
+    fontSize: 12,
+  },
+  actionContent: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

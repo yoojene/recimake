@@ -107,7 +107,9 @@ const renderItem = ({
           ></Image>
           <View style={styles.rowContent}>
             <Text style={styles.rowTitle}>New photo</Text>
-            <Text style={styles.rowSubtitle}>{formatPhotoDate(photoItem.date)}</Text>
+            <Text style={styles.rowSubtitle}>
+              {formatPhotoDate(photoItem.date)}
+            </Text>
             <View style={styles.statusPill}>
               <Text style={styles.statusPillText}>Ready to review</Text>
             </View>

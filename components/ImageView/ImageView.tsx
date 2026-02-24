@@ -67,7 +67,11 @@ const ImageView = forwardRef((props, ref) => {
     <View style={styles.overlayContainer}>
       <View style={styles.overlayBackground} />
       <View style={styles.overlayContent}>
-        <TouchableOpacity style={styles.closeButton} activeOpacity={0.8} onPress={hide}>
+        <TouchableOpacity
+          style={styles.closeButton}
+          activeOpacity={0.8}
+          onPress={hide}
+        >
           <Ionicons name="close" size={34} color="lightblue" />
         </TouchableOpacity>
         <Zoomable isDoubleTapEnabled>

@@ -92,7 +92,10 @@ export default function CameraLayout() {
           style={styles.previewImage}
         ></Image>
         <View
-          style={[styles.previewButtonContainer, { bottom: Math.max(16, insets.bottom + 8) }]}
+          style={[
+            styles.previewButtonContainer,
+            { bottom: Math.max(16, insets.bottom + 8) },
+          ]}
         >
           <TouchableOpacity
             style={[styles.bottomActionButton, styles.previewActionButton]}
@@ -118,7 +121,10 @@ export default function CameraLayout() {
       <View style={styles.container}>
         <CameraView ref={ref} style={styles.camera} facing={facing}>
           <TouchableOpacity
-            style={[styles.closeCameraButton, { top: Math.max(14, insets.top + 4) }]}
+            style={[
+              styles.closeCameraButton,
+              { top: Math.max(14, insets.top + 4) },
+            ]}
             activeOpacity={0.8}
             onPress={() => {
               router.back();
@@ -126,7 +132,12 @@ export default function CameraLayout() {
           >
             <Ionicons name="close" size={34} color="lightblue" />
           </TouchableOpacity>
-          <View style={[styles.buttonContainer, { bottom: Math.max(16, insets.bottom + 8) }]}>
+          <View
+            style={[
+              styles.buttonContainer,
+              { bottom: Math.max(16, insets.bottom + 8) },
+            ]}
+          >
             <TouchableOpacity
               style={styles.bottomActionButton}
               activeOpacity={0.8}

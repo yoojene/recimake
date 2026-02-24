@@ -13,6 +13,7 @@ import { PhotoList } from "@/components/PhotoList/PhotoList";
 import PhotoListBottomSheet from "@/components/PhotoList/PhotoListBottomSheet";
 import Button from "@/components/ui/Button/Button";
 import { IconSymbol } from "@/components/ui/IconSymbol";
+import { router } from "expo-router";
 
 export default function FoodList() {
   const photos = useAppStore((state) => state.photos);
@@ -21,7 +22,6 @@ export default function FoodList() {
 
   const bottomSheetRef = useAppStore((state) => state.bottomSheetRef);
 
-  const sheetOpen = useAppStore((state) => state.sheetOpen);
   const setSheetOpen = useAppStore((state) => state.setSheetOpen);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -87,16 +87,11 @@ export default function FoodList() {
                 <Button
                   className="mt-4"
                   onPress={() => {
-                    setSheetOpen(true);
-                    bottomSheetRef?.current?.present();
-                    if (sheetOpen) {
-                      bottomSheetRef?.current?.close();
-                      setSheetOpen(false);
-                    }
+                    router.push("/recipes");
                   }}
                   color={"green"}
                 >
-                  {sheetOpen ? "Close Recipe List" : "Open Recipe List"}
+                  Open Recipe List
                 </Button>
               </>
             ) : (

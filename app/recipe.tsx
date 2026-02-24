@@ -30,7 +30,8 @@ type RecipeResult = {
 };
 
 const getMockRecipe = (savedCount: number): RecipeResult => {
-  const ingredientPrefix = savedCount > 0 ? "Based on your latest photos" : "Based on your pantry";
+  const ingredientPrefix =
+    savedCount > 0 ? "Based on your latest photos" : "Based on your pantry";
 
   return {
     title: "Crispy Veggie Pan Wraps",
@@ -60,12 +61,17 @@ const getMockRecipe = (savedCount: number): RecipeResult => {
 
 export default function RecipeScreen() {
   const photos = useAppStore((state) => state.photos);
-  const savedPhotoCount = photos.filter((photo) => photo.status === "saved").length;
+  const savedPhotoCount = photos.filter(
+    (photo) => photo.status === "saved"
+  ).length;
 
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  const recipe = useMemo(() => getMockRecipe(savedPhotoCount), [savedPhotoCount]);
+  const recipe = useMemo(
+    () => getMockRecipe(savedPhotoCount),
+    [savedPhotoCount]
+  );
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -82,8 +88,17 @@ export default function RecipeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerRow}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()} activeOpacity={0.8}>
-          <IconSymbol name="chevron.right" size={26} color="#0a7ea4" style={styles.backIcon} />
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+          activeOpacity={0.8}
+        >
+          <IconSymbol
+            name="chevron.right"
+            size={26}
+            color="#0a7ea4"
+            style={styles.backIcon}
+          />
         </TouchableOpacity>
         <ThemedText type="subtitle" style={styles.headerTitle}>
           Recipe Builder
@@ -98,12 +113,17 @@ export default function RecipeScreen() {
             <ThemedText type="subtitle" style={styles.loadingTitle}>
               Creating your recipe...
             </ThemedText>
-            <ThemedText style={styles.loadingSubtitle}>{LOADING_STEPS[phaseIndex]}</ThemedText>
+            <ThemedText style={styles.loadingSubtitle}>
+              {LOADING_STEPS[phaseIndex]}
+            </ThemedText>
             <View style={styles.stepDotsContainer}>
               {LOADING_STEPS.map((_, index) => (
                 <View
                   key={index}
-                  style={[styles.stepDot, index <= phaseIndex ? styles.stepDotActive : undefined]}
+                  style={[
+                    styles.stepDot,
+                    index <= phaseIndex ? styles.stepDotActive : undefined,
+                  ]}
                 />
               ))}
             </View>
@@ -115,7 +135,9 @@ export default function RecipeScreen() {
             <ThemedText type="title" style={styles.recipeTitle}>
               {recipe.title}
             </ThemedText>
-            <ThemedText style={styles.recipeDescription}>{recipe.description}</ThemedText>
+            <ThemedText style={styles.recipeDescription}>
+              {recipe.description}
+            </ThemedText>
 
             <View style={styles.metaRow}>
               <View style={styles.metaPill}>
@@ -128,7 +150,9 @@ export default function RecipeScreen() {
               </View>
               <View style={styles.metaPill}>
                 <ThemedText style={styles.metaLabel}>Serves</ThemedText>
-                <ThemedText style={styles.metaValue}>{recipe.servings}</ThemedText>
+                <ThemedText style={styles.metaValue}>
+                  {recipe.servings}
+                </ThemedText>
               </View>
             </View>
           </View>
@@ -139,7 +163,9 @@ export default function RecipeScreen() {
               {recipe.ingredients.map((ingredient) => (
                 <View style={styles.bulletRow} key={ingredient}>
                   <View style={styles.bullet} />
-                  <ThemedText style={styles.bulletText}>{ingredient}</ThemedText>
+                  <ThemedText style={styles.bulletText}>
+                    {ingredient}
+                  </ThemedText>
                 </View>
               ))}
             </View>
@@ -151,7 +177,9 @@ export default function RecipeScreen() {
               {recipe.steps.map((step, index) => (
                 <View style={styles.stepRow} key={step}>
                   <View style={styles.stepNumberWrap}>
-                    <ThemedText style={styles.stepNumber}>{index + 1}</ThemedText>
+                    <ThemedText style={styles.stepNumber}>
+                      {index + 1}
+                    </ThemedText>
                   </View>
                   <ThemedText style={styles.stepText}>{step}</ThemedText>
                 </View>

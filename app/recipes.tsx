@@ -57,7 +57,9 @@ export default function RecipesListScreen() {
 
         <View style={styles.sectionHeaderRow}>
           <ThemedText type="subtitle">Recent</ThemedText>
-          <ThemedText style={styles.sectionCount}>{MOCK_RECIPES.length}</ThemedText>
+          <ThemedText style={styles.sectionCount}>
+            {MOCK_RECIPES.length}
+          </ThemedText>
         </View>
 
         {MOCK_RECIPES.map((recipe) => (
@@ -67,11 +69,17 @@ export default function RecipesListScreen() {
                 <IconSymbol name="fork.knife" size={20} color="#0a7ea4" />
               </View>
               <View style={styles.recipeTextWrap}>
-                <ThemedText style={styles.recipeTitle}>{recipe.title}</ThemedText>
-                <ThemedText style={styles.recipeSummary}>{recipe.summary}</ThemedText>
+                <ThemedText style={styles.recipeTitle}>
+                  {recipe.title}
+                </ThemedText>
+                <ThemedText style={styles.recipeSummary}>
+                  {recipe.summary}
+                </ThemedText>
               </View>
             </View>
-            <ThemedText style={styles.recipeTimestamp}>{recipe.createdAt}</ThemedText>
+            <ThemedText style={styles.recipeTimestamp}>
+              {recipe.createdAt}
+            </ThemedText>
           </View>
         ))}
       </ScrollView>
